@@ -243,7 +243,7 @@ input[type=range]{flex:1;min-width:0;accent-color:var(--brass);height:36px}
     <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#e3ae4c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><path d="M12 7v14M5 12H3a9 9 0 0 0 18 0h-2M8 10h8"/></svg>
     <div><h1>Sand Box Titanic</h1><small id="coords">41.75°N 49.30°W</small></div>
   </div>
-  <div id="modes" class="panel"><button class="btn" id="mAvatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>My Character</button><button class="btn" id="mStory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16v14H4zM10 9l5 3-5 3z"/></svg>Sink a Ship</button><button class="btn" id="mSearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>Search</button><button class="btn" id="mDive"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13a9 5 0 0 0 18 0 9 5 0 0 0-18 0zM8 13h.01M12 13h.01M16 13h.01M12 8V4M9 4h6"/></svg>Dive to a Wreck</button></div>
+  <div id="modes" class="panel"><button class="btn" id="mAvatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>My Character</button><button class="btn" id="mStory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16v14H4zM10 9l5 3-5 3z"/></svg>Sink a Ship</button><button class="btn" id="mSandbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15h18l-2.5 4.5h-13zM6 15V9h5v6M11 11h5v4M8 9V6M2 20q2.5 2 5 0t5 0 5 0 5 0"/><path d="M14 5l2 2M19 4l-1 3" /></svg>Ship Sandbox</button><button class="btn" id="mSearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>Search</button><button class="btn" id="mDive"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13a9 5 0 0 0 18 0 9 5 0 0 0-18 0zM8 13h.01M12 13h.01M16 13h.01M12 8V4M9 4h6"/></svg>Dive to a Wreck</button></div>
   <div id="stats" class="panel" hidden></div>
 </div>
 
@@ -7514,13 +7514,419 @@ function bindInput(){const jz=$('#wkJoy'),knob=$('#wkKnob');let jid=null,jc=null
 if((location.protocol==='file:'||location.hostname==='127.0.0.1'))window.__wk={open,look:(x,y,z,yw,pt)=>{camP.set(x,y,z);yaw=yw;pitch=pt},get W(){return W},get cam(){return camP},goto:id=>goTo(POIS.find(p=>p.id===id)),fishAt:(i)=>{const g=fish[i||0];const c=g.schools[0].c;camP.set(c.x+4,c.y+.5,c.z+4);yaw=Math.atan2(c.x-camP.x,-(c.z-camP.z));pitch=-.1;return JSON.stringify({sp:g.sp,c:c.toArray().map(Math.round),n:g.list.length,p0:g.list[0].p.toArray().map(Math.round)})},pois:()=>POIS.map(p=>p.id),lv:()=>{const l=room&&room.lv;const L=Sink.live();return l?JSON.stringify({rl:+l.rl.toFixed(2),sea:+l.seaS.toFixed(2),comp:l.comp,a:l.a,holes:L.P&&L.P.holes.map(h=>[h.c,+h.jet.toFixed(2),Math.round(h.x),+h.y.toFixed(1)]),C:L.P&&L.P.C,th:L.P&&+L.P.th.toFixed(3),ph:L.phase,t:L.P&&L.P.t}):'none'},poi:id=>POIS.find(p=>p.id===id).p.toArray(),enter:k=>enterRoom(k),leave:()=>leaveRoom(),get room(){return room},talk:i=>openTalk(room.lv.people[i]),sk:()=>{const L=Sink.live();return JSON.stringify({walk:L.walk,sup:L.spec.sup.map(t=>[t.x0,t.x1,t.y,t.h,t.w,t.z||0]),L:L.spec.L,D:L.spec.D,B:L.spec.B})},joy:(x,y)=>{joy.x=x;joy.y=y},deck:i=>goDeck(i),goin:i=>tourRoom(i,'deck'),bst:()=>JSON.stringify({deck:TOUR&&TOUR.deck,b:room&&room.lv?room.lv.camL:null,yaw}),setb:(x,z,yw)=>{room.lv.camL.set(x,0,z);yaw=yw},stick:()=>{try{socialTick(5,room.lv,room.r)}catch(e){return 'E '+e.message+e.stack}return JSON.stringify(room.lv.people.map(p=>[p.conv,!!p.el]))},sdbg:()=>JSON.stringify(room.lv.people.map(p=>[p.act,p.lead,p.conv&&p.conv.t,p.nextLine,!!p.el,p.bub&&p.bub.t])),send:t=>talkSend(t),ppl:()=>room.lv.people.map(p=>p.name+'|'+p.role+'|'+p.act+'|'+p.st).join('; '),rlook:(x,y,z,yw,pt)=>{camP.set(x,y,z);room.r.g.localToWorld(camP);yaw=yw;pitch=pt}};
 return{open,openPicker,close,tour,tourDive,get on(){return on},frame}})();
 
+
+/* ---------- Ship Sandbox (2D soft-body ships, Floating Sandbox style) ---------- */
+const Sandbox=(()=>{
+if(!HAS3D||!Ship3D)return{open(){toast('Ship Sandbox needs 3D graphics on this device.')},get on(){return false},frame(){}};
+const{SPECS,build}=Ship3D;
+/* ---------- DOM ---------- */
+const css=`#sbx{position:fixed;inset:0;z-index:45;background:#0b1a2a;overflow:hidden;touch-action:none}
+#sbx canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#sbxGl{pointer-events:none}#sbxBg{pointer-events:none}
+#sbxTop{position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px);left:max(12px,env(safe-area-inset-left,0px));padding:10px 16px;display:flex;flex-direction:column;gap:2px;min-width:170px;pointer-events:none}
+#sbxTop b{font-family:var(--disp);font-weight:400;font-size:22px;letter-spacing:.02em}
+#sbxTop span{font-size:14px;font-weight:800;color:var(--mist);font-variant-numeric:tabular-nums}
+#sbxTop i{font-style:normal;color:var(--brass)}
+#sbxBtns{position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px);right:max(12px,env(safe-area-inset-right,0px));display:flex;gap:6px;padding:6px;flex-wrap:wrap;justify-content:flex-end;max-width:calc(100vw - 230px)}
+#sbxTools{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);left:50%;transform:translateX(-50%);display:flex;gap:8px;padding:8px}
+#sbxTools button{width:84px;min-height:74px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:14px;padding:6px 4px}
+#sbxTools button em{font-style:normal;font-size:30px;line-height:1}
+#sbxMsg{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 112px);transform:translateX(-50%);padding:10px 18px;font-weight:800;font-size:17px;pointer-events:none;opacity:0;transition:opacity .3s;text-align:center;max-width:min(560px,calc(100vw - 32px))}
+#sbxMsg.show{opacity:1}
+#sbxPick{position:absolute;inset:0;z-index:3;background:radial-gradient(circle at 50% 0%,#1f4467,#081521 70%);overflow-y:auto;padding:calc(env(safe-area-inset-top,0px) + 18px) max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 24px) max(16px,env(safe-area-inset-left,0px));touch-action:pan-y}
+#sbxPick .skhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;max-width:1180px;margin:0 auto 14px}
+#sbxPick h2{font-family:var(--disp);font-weight:400;margin:0 0 4px;font-size:28px}
+#sbxPick p{margin:0;color:var(--mist);font-weight:700}
+#sbxGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;max-width:1180px;margin:0 auto}
+.sbxc{background:var(--glass);border:2px solid var(--brass2);border-radius:16px;overflow:hidden;padding:0;text-align:left;display:flex;flex-direction:column}
+.sbxc .im{aspect-ratio:2/1;background:linear-gradient(#8cc4ea 0 62%,#1f6390 62%);display:grid;place-items:center;color:var(--mist);font-size:13px}
+.sbxc .im img{width:94%;height:88%;object-fit:contain}
+.sbxc .tx{padding:8px 12px 12px}.sbxc b{font-size:17px;display:block}.sbxc small{color:var(--mist);font-weight:700}
+#sbxPickX{width:52px;height:52px;border-radius:13px;background:var(--navy2);display:grid;place-items:center;flex:none}
+#sbxLoad{position:absolute;inset:0;display:grid;place-items:center;font-weight:900;font-size:20px;color:var(--cream);background:rgba(8,21,33,.6);z-index:2}`;
+const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
+const el=document.createElement('div');el.id='sbx';el.hidden=true;
+el.innerHTML='<canvas id="sbxBg"></canvas><canvas id="sbxGl"></canvas><canvas id="sbxFg"></canvas>'+
+ '<div id="sbxTop" class="panel"><b id="sbxName">Titanic</b><span id="sbxInfo"></span><span id="sbxInfo2"></span></div>'+
+ '<div id="sbxBtns" class="panel"><button class="btn" id="sbxShips">Ships</button><button class="btn" id="sbxPlay">Pause</button><button class="btn" id="sbxSpeed">Speed ×1</button><button class="btn" id="sbxStorm">Storm</button><button class="btn on" id="sbxVoice">Voice</button><button class="btn" id="sbxFix">New ship</button><button class="btn big" id="sbxExit">Map</button></div>'+
+ '<div id="sbxTools" class="panel">'+[['grab','✋','Grab'],['berg','🧊','Iceberg'],['bomb','💣','Bomb'],['saw','🪚','Saw'],['wave','🌊','Wave']].map(t=>'<button class="btn" data-t="'+t[0]+'"><em>'+t[1]+'</em>'+t[2]+'</button>').join('')+'</div>'+
+ '<div id="sbxMsg" class="panel"></div><div id="sbxLoad" hidden>Building the ship…</div>'+
+ '<div id="sbxPick" hidden><div class="skhead"><div><h2>Choose a ship</h2><p>Every ship is made of thousands of little pieces. Break it, flood it, sink it!</p></div><button id="sbxPickX" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div><div id="sbxGrid"></div></div>';
+document.body.appendChild(el);
+const q=s=>el.querySelector(s),bg=q('#sbxBg'),glc=q('#sbxGl'),fg=q('#sbxFg'),bx=bg.getContext('2d'),fx=fg.getContext('2d');
+
+/* ---------- state ---------- */
+let BRK=110,helloed=0,on=false,R=null,spec=null,W=null,SP=null,tool='grab',paused=false,speed=1,voice=true,storm=0,stormOn=false,simT=0,
+  cam={x:0,y:0,z:3,zt:3,um:1,ox:0,oy:0,shake:0},floorD=200,parts=[],bombs=[],waves=[],berg=null,saw=null,said={},flash=0,lightT=5,
+  pieceT=0,pieces=1,bottomed=0,funs=[],ncol=null,Wpx=1,Hpx=1,dpr=1,msgT=0,lastCrack=0,sawSnd=0;
+const clampN=(v,a,b)=>v<a?a:v>b?b:v;
+
+/* ---------- sound ---------- */
+let AC=null;
+function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){AC=null}}if(AC&&AC.state==='suspended')AC.resume();return AC}
+function noise(dur,type,f,vol,q=1,f2){const a=ac();if(!a)return;try{const n=Math.ceil(a.sampleRate*dur),b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2);
+  const s=a.createBufferSource();s.buffer=b;const fl=a.createBiquadFilter();fl.type=type;fl.frequency.value=f;fl.Q.value=q;if(f2)fl.frequency.exponentialRampToValueAtTime(f2,a.currentTime+dur);const g=a.createGain();g.gain.value=vol;s.connect(fl);fl.connect(g);g.connect(a.destination);s.start()}catch(e){}}
+function tone(f0,f1,dur,vol,type='sine'){const a=ac();if(!a)return;try{const o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f0,a.currentTime);o.frequency.exponentialRampToValueAtTime(f1,a.currentTime+dur);g.gain.setValueAtTime(vol,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+dur);o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+dur)}catch(e){}}
+const SND={boom(){noise(1.6,'lowpass',900,1.1,.7,60);tone(90,30,.9,.8)},crack(){noise(.18,'bandpass',900+Math.random()*900,.35,2)},splash(){noise(.7,'bandpass',700,.35,.8,250)},
+  saw(){noise(.09,'highpass',2500,.12,1)},thunder(){noise(2.8,'lowpass',260,.9,.6,60)},groan(){tone(70+Math.random()*30,45,1.2,.25,'sawtooth')},ice(){noise(.5,'bandpass',1500,.5,1.5,400)}};
+function say(k,t){if(said[k])return;said[k]=1;msg(t);if(voice&&typeof speakEN==='function'){try{speechSynthesis.cancel();speakEN(t)}catch(e){}}}
+function msg(t,ms=3200){const m=q('#sbxMsg');m.textContent=t;m.classList.add('show');msgT=ms/1000}
+
+/* ---------- physics core ---------- */
+/* Ship Sandbox physics core: mass-spring soft body + flooding (Floating Sandbox style).
+   World units: meters, y up, sea level y=0. */
+function sbxPhys(opt){
+  // opt: {cols, rows, h, filled(i,j)->bool, x0, y0 (world pos of node 0,0), uv(i,j)->[u,v], deckY (local y above which structure is light), bulk:[x local], bh, T}
+  const {cols,rows,h}=opt;
+  const nid=new Int32Array((cols+1)*(rows+1)).fill(-1);
+  const NI=(i,j)=>j*(cols+1)+i;
+  const cellF=new Uint8Array(cols*rows);
+  for(let j=0;j<rows;j++)for(let i=0;i<cols;i++)if(opt.filled(i,j))cellF[j*cols+i]=1;
+  const CF=(i,j)=>i>=0&&j>=0&&i<cols&&j<rows&&cellF[j*cols+i]===1;
+  // drop tiny islands (flood fill over cells sharing a node)
+  {const comp=new Int32Array(cols*rows).fill(-1),sizes=[];let c=0;
+   for(let s=0;s<cols*rows;s++){if(!cellF[s]||comp[s]>=0)continue;const st=[s];comp[s]=c;let n=0;
+     while(st.length){const k=st.pop();n++;const i=k%cols,j=(k/cols)|0;for(let dj=-1;dj<=1;dj++)for(let di=-1;di<=1;di++){const ii=i+di,jj=j+dj;if(ii<0||jj<0||ii>=cols||jj>=rows)continue;const q=jj*cols+ii;if(cellF[q]&&comp[q]<0){comp[q]=c;st.push(q)}}}
+     sizes.push(n);c++}
+   let big=0;for(let k=1;k<sizes.length;k++)if(sizes[k]>sizes[big])big=k;
+   for(let s=0;s<cols*rows;s++)if(cellF[s]&&comp[s]!==big&&sizes[comp[s]]<Math.max(6,sizes[big]*.04))cellF[s]=0}
+  // nodes
+  const NX=[],NY=[],NU=[],NV=[],LI=[],LJ=[];let N=0;
+  for(let j=0;j<=rows;j++)for(let i=0;i<=cols;i++){if(CF(i-1,j-1)||CF(i,j-1)||CF(i-1,j)||CF(i,j)){nid[NI(i,j)]=N++;NX.push(opt.x0+i*h);NY.push(opt.y0+j*h);const uv=opt.uv(i,j);NU.push(uv[0]);NV.push(uv[1]);LI.push(i);LJ.push(j)}}
+  const px=new Float64Array(NX),py=new Float64Array(NY),ox=new Float64Array(NX),oy=new Float64Array(NY);
+  const w=new Float32Array(N),hull=new Uint8Array(N),porous=new Uint8Array(N),broken=new Uint16Array(N),dens=new Float32Array(N),deg=new Uint16Array(N),burn=new Float32Array(N),hit=new Uint8Array(N);
+  const uvs=new Float32Array(N*2);for(let k=0;k<N;k++){uvs[k*2]=NU[k];uvs[k*2+1]=NV[k]}
+  // node classification
+  for(let k=0;k<N;k++){const i=LI[k],j=LJ[k];const dl=CF(i-1,j-1),dr=CF(i,j-1),ul=CF(i-1,j),ur=CF(i,j);
+    const all=dl&&dr&&ul&&ur,ly=j*h+opt.y0Local;if(!all){hull[k]=1;if(!ul&&!ur||ly>opt.deckY+h)porous[k]=1}
+    dens[k]=ly>opt.deckY?.32:1}
+  // bulkheads (watertight walls up to bh)
+  if(opt.bulk)for(const bx of opt.bulk){const i=Math.round((bx-opt.x0Local)/h);if(i<1||i>=cols)continue;for(let j=0;j<=rows;j++){const k=nid[NI(i,j)];if(k<0)continue;if(j*h+opt.y0Local<=opt.bh&&!hull[k])hull[k]=2}}
+  // springs
+  const SA=[],SB=[],SR=[],SK=[];const smap=new Map();
+  const add=(a,b,kind)=>{if(a<0||b<0)return -1;const key=a<b?a*N+b:b*N+a;if(smap.has(key))return smap.get(key);const id=SA.length;SA.push(a);SB.push(b);SR.push(Math.hypot(px[a]-px[b],py[a]-py[b]));SK.push(kind);smap.set(key,id);return id};
+  const cells=[];
+  for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){if(!CF(i,j))continue;const a=nid[NI(i,j)],b=nid[NI(i+1,j)],c=nid[NI(i,j+1)],d=nid[NI(i+1,j+1)];
+    const eB=add(a,b,0),eT=add(c,d,0),eL=add(a,c,0),eR=add(b,d,0),d1=add(a,d,1),d2=add(b,c,1);cells.push([a,b,c,d,eB,eT,eL,eR,d1,d2])}
+  // long springs (2 apart) along rows/cols, tied to the two short springs they span
+  const longOf=[];
+  const sk_=(a,b)=>smap.get(a<b?a*N+b:b*N+a);
+  const longAdd=(i,j,di,dj,n)=>{const ids=[];for(let t=0;t<=n;t++){const q=nid[NI(i+t*di,j+t*dj)];if(q<0)return;ids.push(q)}const ss=[];for(let t=0;t<n;t++){const v=sk_(ids[t],ids[t+1]);if(v==null)return;ss.push(v)}const id=add(ids[0],ids[n],2);longOf.push([id,...ss])};
+  for(let j=0;j<=rows;j++)for(let i=0;i<=cols;i++){if(i+2<=cols)longAdd(i,j,1,0,2);if(j+2<=rows)longAdd(i,j,0,1,2);if(i+4<=cols&&i%2===0)longAdd(i,j,1,0,4);if(j+4<=rows&&j%2===0)longAdd(i,j,0,1,4)}
+  const S=SA.length,sa=new Int32Array(SA),sb=new Int32Array(SB),sr=new Float32Array(SR),sk=new Uint8Array(SK),alive=new Uint8Array(S).fill(1);
+  for(let s=0;s<S;s++){deg[sa[s]]++;deg[sb[s]]++}
+  const str=new Float32Array(S);{let r=12345;for(let s=0;s<S;s++){r=(r*16807)%2147483647;str[s]=sr[s]*(.85+.3*r/2147483647)}}
+  const cellAlive=new Uint8Array(cells.length).fill(1);
+  // 4-neighbour flow edges (short springs only)
+  const flow=[];for(let s=0;s<S;s++)if(sk[s]===0)flow.push(s);
+  // mass calibration: waterline at draft T (local y) => sea level
+  const T=opt.T;let nSub=0,mass=0;for(let k=0;k<N;k++){const ly=LJ[k]*h+opt.y0Local;if(ly<T)nSub+=Math.min(1,(T-ly)/h+.5);mass+=dens[k]}
+  // trim: shift mass along x so the centre of mass sits over the centre of buoyancy (ship floats level)
+  {let bx=0,bw=0,mx=0;for(let k=0;k<N;k++){const ly=LJ[k]*h+opt.y0Local;if(ly<T){const f=Math.min(1,(T-ly)/h+.5);bx+=px[k]*f;bw+=f}mx+=px[k]*dens[k]}bx/=bw||1;mx/=mass;
+   let I=0;for(let k=0;k<N;k++)I+=dens[k]*(px[k]-mx)*(px[k]-mx);let a=I>0?(bx-mx)*mass/I:0;let lo=1e9,hi=-1e9;for(let k=0;k<N;k++){lo=Math.min(lo,px[k]-mx);hi=Math.max(hi,px[k]-mx)}
+   const lim=.7/Math.max(Math.abs(lo),Math.abs(hi),1e-6);a=Math.max(-lim,Math.min(lim,a));for(let k=0;k<N;k++)dens[k]*=1+a*(px[k]-mx)}
+  const s0=Math.max(.05,nSub/mass);for(let k=0;k<N;k++)dens[k]*=s0;
+  const W={str,brkS:1e9,N,S,px,py,ox,oy,w,hull,porous,broken,dens,deg,burn,hit,uvs,sa,sb,sr,sk,alive,cells,cellAlive,longOf,flow,h,LI,LJ,dirty:true,breaks:0,newBreaks:0,
+    surf:x=>0,wvx:x=>0,floor:x=>-1e9,grab:null,berg:null,t:0};
+  return W;
+}
+function sbxBreak(W,s){if(!W.alive[s])return false;W.alive[s]=0;W.deg[W.sa[s]]--;W.deg[W.sb[s]]--;if(W.sk[s]!==2){W.broken[W.sa[s]]++;W.broken[W.sb[s]]++;W.newBreaks++}W.dirty=true;return true}
+function sbxStep(W,H){ // one substep of length H
+  const {N,S,px,py,ox,oy,w,dens,sa,sb,sr,sk,alive,h,str}=W,g=9.8,H2=H*H;if(!W.im)W.im=new Float32Array(N);const im=W.im,bs=W.brkS*(H*480)*(H*480),gone=W.gone;
+  for(let k=0;k<N;k++){if(gone&&gone[k])continue;const x=px[k],y=py[k];let vx=x-ox[k],vy=y-oy[k];const sl=W.surf(x),dep=sl-y,sub=dep<=-h*.5?0:dep>=h*.5?1:dep/h+.5,m=dens[k]+(w[k]<1?w[k]:1);
+    let ay=g*(sub-m)/m,ax=0;
+    if(sub>0){const dr=.55*H*sub,wv=W.wvx(x,y)*H;vx+=(wv-vx)*dr+wv*.12*sub*H*60;vy-=vy*dr}else{vx*=1-.04*H;vy*=1-.04*H}
+    ox[k]=x;oy[k]=y;px[k]=x+vx+ax*H2;py[k]=y+vy+ay*H2;im[k]=1/m}
+  // grab
+  if(W.grab){const k=W.grab.k;if(k>=0){const f=.1;px[k]+=(W.grab.x-px[k])*f;py[k]+=(W.grab.y-py[k])*f}}
+  // springs (alternate direction)
+  W.t++;
+  for(let s=0;s<S;s++){if(!alive[s])continue;const a=sa[s],b=sb[s];const dx=px[b]-px[a],dy=py[b]-py[a],d=Math.sqrt(dx*dx+dy*dy)||1e-6;
+    const wa=im[a],wb=im[b];const e=d-sr[s];if(e>bs*str[s]){sbxBreak(W,s);continue}const c=e/(d*(wa+wb))*(sk[s]===2?.6:1);if(W.rec&&e>W.rec[s])W.rec[s]=e;px[a]+=wa*c*dx;py[a]+=wa*c*dy;px[b]-=wb*c*dx;py[b]-=wb*c*dy}
+  // seabed + iceberg collisions
+  const ft=W.floorTop!=null?W.floorTop:-1e8;for(let k=0;k<N;k++){if(py[k]>ft)continue;const fy=W.floor(px[k]);if(py[k]<fy){py[k]=fy;oy[k]=fy;ox[k]=px[k]-(px[k]-ox[k])*.4;W.hit[k]=1}}
+  if(W.berg)W.berg.collide(W);
+}
+function sbxPost(W,dt){ // per-frame: breaking + flooding
+  const {N,S,px,py,sa,sb,sr,sk,alive,w,hull,porous,broken,h}=W;W.newBreaks=0;
+  for(let s=0;s<S;s++){if(!alive[s]||sk[s]===2)continue;const dx=px[sb[s]]-px[sa[s]],dy=py[sb[s]]-py[sa[s]],e=Math.sqrt(dx*dx+dy*dy)/sr[s]-1;if(e>W.brk||e<-.45)sbxBreak(W,s)}
+  if(W.dirty){for(const L of W.longOf){if(!alive[L[0]])continue;for(let t=1;t<L.length;t++)if(!alive[L[t]]){sbxBreak(W,L[0]);break}}
+    const C=W.cells;for(let c=0;c<C.length;c++){if(!W.cellAlive[c])continue;const q=C[c];if(!alive[q[4]]||!alive[q[5]]||!alive[q[6]]||!alive[q[7]]){W.cellAlive[c]=0;sbxBreak(W,q[8]);sbxBreak(W,q[9])}}}
+  W.breaks+=W.newBreaks;
+  // flooding (w = water amount; >1 means pressurised, head in cell units)
+  const kin=W.kin!=null?W.kin:2.2;let inflow=0;
+  for(let k=0;k<N;k++){const pass=!hull[k]||broken[k]>0||porous[k];if(!pass)continue;const exp=porous[k]||broken[k]>0||W.deg[k]<3;if(!exp)continue;
+    const dep=W.surf(px[k])-py[k];if(!broken[k]&&W.deg[k]>=3&&dep<h*.6&&w[k]<=0)continue;const tg=dep>0?Math.min(6,dep/h+.5):0,d=tg-w[k];
+    if(d>0){const a=d*Math.min(.8,kin*dt);w[k]+=a;inflow+=a}else if(w[k]>0)w[k]+=d*Math.min(.8,1.2*dt)}
+  const F=W.flow,kd=Math.min(.5,6*dt),ks=Math.min(.45,4*dt),FL=F.length;
+  for(let r=0;r<2;r++)for(let q=0;q<FL;q++){const s=F[(q*7919+r*104729)%FL];if(!alive[s])continue;let a=sa[s],b=sb[s];
+    const fa=broken[a]||porous[a]||!hull[a]?1:hull[a]===2?.1:0,fb=broken[b]||porous[b]||!hull[b]?1:hull[b]===2?.1:0,ff=fa<fb?fa:fb;if(!ff)continue;if(py[a]<py[b]){const t=a;a=b;b=t}// a is higher
+    const dc=(py[a]-py[b])/h,wa=w[a],wb=w[b];if(wa<=0&&wb<=1)continue;let t;
+    if(wb<1&&dc>.35)t=Math.min(wa,1-wb)*kd;
+    else if(wb>=1||wa>=1)t=(wa+dc-wb)*.5*ks;
+    else t=(wa-wb)*.5*ks;
+    t*=ff;if(t>0)t=Math.min(t,wa);else t=Math.max(t,-wb);
+    w[a]-=t;w[b]+=t}
+  W.inflow=inflow;
+}
+
+
+
+/* ---------- ship sprite from the 3D model (side view) ---------- */
+function initGL(){if(R)return;const r=new THREE.WebGLRenderer({canvas:glc,alpha:true,antialias:true,premultipliedAlpha:false});r.setClearColor(0x000000,0);r.outputEncoding=THREE.sRGBEncoding;r.toneMapping=THREE.ACESFilmicToneMapping;r.toneMappingExposure=1.15;
+  const sc=new THREE.Scene(),cam=new THREE.OrthographicCamera(-1,1,1,-1,-10,10);
+  const mat=new THREE.ShaderMaterial({uniforms:{map:{value:null}},vertexShader:'attribute float aw;attribute float ab;varying vec2 vUv;varying float vW;varying float vB;void main(){vUv=uv;vW=aw;vB=ab;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+    fragmentShader:'uniform sampler2D map;varying vec2 vUv;varying float vW;varying float vB;void main(){vec4 t=texture2D(map,vUv);if(t.a<.45)discard;vec3 c=t.rgb/max(t.a,.001);c=mix(c,c*.22+vec3(.05,.03,.02),clamp(vB,0.,1.)*.85);c=mix(c,vec3(.12,.42,.78),clamp(vW,0.,1.)*.42);gl_FragColor=vec4(c,1.);}',side:THREE.DoubleSide});
+  const geo=new THREE.BufferGeometry(),mesh=new THREE.Mesh(geo,mat);mesh.frustumCulled=false;sc.add(mesh);
+  R={r,sc,cam,mat,geo,mesh,rt:null}}
+function makeSprite(s,maxW,maxH){initGL();const r=R.r;const sh=build(s,{single:1});
+  const sc=new THREE.Scene();sc.add(new THREE.AmbientLight(0xffffff,.55));sc.add(new THREE.HemisphereLight(0xdfefff,0x2a3a48,.9));const d1=new THREE.DirectionalLight(0xfff3e0,2.1);d1.position.set(-.35,.55,1);sc.add(d1);const d2=new THREE.DirectionalLight(0xbfd8ff,.5);d2.position.set(.5,.2,.6);sc.add(d2);
+  sc.add(sh.root);sh.root.updateMatrixWorld(true);const box=new THREE.Box3();sh.root.traverse(o=>{if(o.isMesh&&o.visible&&o.geometry){let p=o,vis=true;while(p){if(!p.visible){vis=false;break}p=p.parent}if(vis){o.geometry.computeBoundingBox();if(o.geometry.boundingBox&&isFinite(o.geometry.boundingBox.min.x)){const b=o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld);box.union(b)}}}});
+  const pad=Math.max(.5,s.L*.01),x0=box.min.x-pad,x1=box.max.x+pad,y0=box.min.y-pad,y1=box.max.y+pad,sw=x1-x0,shh=y1-y0;
+  const ppm=Math.min(48,maxW/sw,maxH/shh),Wt=Math.max(16,Math.ceil(sw*ppm)),Ht=Math.max(16,Math.ceil(shh*ppm));
+  const cam=new THREE.OrthographicCamera(x0,x0+Wt/ppm,y0+Ht/ppm,y0,-500,500);cam.position.set(0,0,200);cam.lookAt(0,0,0);
+  const rt=new THREE.WebGLRenderTarget(Wt,Ht,{minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter,format:THREE.RGBAFormat});rt.texture.encoding=THREE.sRGBEncoding;
+  const prevTM=r.toneMapping;r.setRenderTarget(rt);r.setClearColor(0x000000,0);r.clear();r.render(sc,cam);const buf=new Uint8Array(Wt*Ht*4);r.readRenderTargetPixels(rt,0,0,Wt,Ht,buf);r.setRenderTarget(null);r.toneMapping=prevTM;
+  sc.remove(sh.root);sh.root.traverse(m=>{if(m.geometry)m.geometry.dispose()});
+  return{rt,buf,W:Wt,H:Ht,ppm,x0,y0,x1:x0+Wt/ppm,y1:y0+Ht/ppm}}
+function spriteURL(sp){const c=document.createElement('canvas');c.width=sp.W;c.height=sp.H;const x=c.getContext('2d'),id=x.createImageData(sp.W,sp.H);
+  for(let y=0;y<sp.H;y++){const src=(sp.H-1-y)*sp.W*4;id.data.set(sp.buf.subarray(src,src+sp.W*4),y*sp.W*4)}x.putImageData(id,0,0);return c.toDataURL('image/png')}
+
+/* ---------- build a world ---------- */
+function alphaAt(sp,x,y){const px=Math.floor((x-sp.x0)*sp.ppm),py=Math.floor((y-sp.y0)*sp.ppm);if(px<0||py<0||px>=sp.W||py>=sp.H)return 0;return sp.buf[(py*sp.W+px)*4+3]}
+function colAt(sp,u,v){const px=clampN(Math.floor(u*sp.W),0,sp.W-1),py=clampN(Math.floor(v*sp.H),0,sp.H-1),i=(py*sp.W+px)*4,a=sp.buf[i+3]||255;return'rgb('+Math.min(255,sp.buf[i]*255/a|0)+','+Math.min(255,sp.buf[i+1]*255/a|0)+','+Math.min(255,sp.buf[i+2]*255/a|0)+')'}
+function newWorld(s,sp){const spanX=sp.x1-sp.x0,spanY=sp.y1-sp.y0;let h=spanX/150,mask=null,cols,rows;
+  for(let it=0;it<4;it++){cols=Math.ceil(spanX/h);rows=Math.ceil(spanY/h);mask=new Uint8Array(cols*rows);let n=0;
+    for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){const cx=sp.x0+(i+.5)*h,cy=sp.y0+(j+.5)*h,o=h*.3;let c=0;if(alphaAt(sp,cx,cy)>127)c+=2;if(alphaAt(sp,cx-o,cy-o)>127)c++;if(alphaAt(sp,cx+o,cy-o)>127)c++;if(alphaAt(sp,cx-o,cy+o)>127)c++;if(alphaAt(sp,cx+o,cy+o)>127)c++;if(c>=3){mask[j*cols+i]=1;n++}}
+    if(n<=2700)break;h*=Math.sqrt(n/2600)}
+  const T=s.T,offX=-s.L/2,offY=-T;
+  const w=sbxPhys({cols,rows,h,filled:(i,j)=>mask[j*cols+i]===1,x0:sp.x0+offX,y0:sp.y0+offY,x0Local:sp.x0,y0Local:sp.y0,uv:(i,j)=>[(i*h)/(sp.x1-sp.x0),(j*h)/(sp.y1-sp.y0)],deckY:s.D+.3,bulk:s.bulk,bh:s.bh||s.D*.7,T});
+  w.brk=.3;w.kin=2.4;w.offX=offX;w.offY=offY;return w}
+function start(s){spec=s;q('#sbxLoad').hidden=false;q('#sbxName').textContent=s.name;
+  setTimeout(()=>{try{
+    if(SP&&SP.rt)SP.rt.dispose();SP=makeSprite(s,2048,1400);W=newWorld(s,SP);
+    floorD=clampN(s.L*1.25,60,340);W.floor=x=>-floorD+Math.sin(x*.013)*floorD*.04+Math.sin(x*.051+1)*floorD*.012;W.floorTop=-floorD*.94;W.surf=surf;W.wvx=wvx;
+    // node colours for loose pieces
+    ncol=new Array(W.N);for(let k=0;k<W.N;k++)ncol[k]=colAt(SP,W.uvs[k*2],W.uvs[k*2+1]);
+    // funnel tops (smoke)
+    funs=[];if(s.smoke&&s.fun)for(const f of s.fun){const fx_=f[0],fy_=(s.funY||s.D)+(f[3]||8);let best=-1,bd=1e9;for(let k=0;k<W.N;k++){const lx=W.px[k]-W.offX,ly=W.py[k]-W.offY,d=Math.abs(lx-fx_)*2+Math.abs(ly-fy_);if(d<bd){bd=d;best=k}}if(best>=0&&bd<s.L*.08)funs.push(best)}
+    // GL buffers
+    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(W.N*3),3));g.setAttribute('uv',new THREE.BufferAttribute(W.uvs,2));
+    g.setAttribute('aw',new THREE.BufferAttribute(new Float32Array(W.N),1));g.setAttribute('ab',new THREE.BufferAttribute(new Float32Array(W.N),1));
+    R.mesh.geometry.dispose();R.mesh.geometry=g;R.geo=g;R.mat.uniforms.map.value=SP.rt.texture;W.dirty=true;
+    // settle + calibrate breaking strength
+    for(let f=0;f<150;f++){if(f===90)W.rec=new Float32Array(W.S);for(let k=0;k<8;k++)sbxStep(W,1/480);sbxPost(W,1/60)}
+    {const eq=W.rec,nz=[];for(let k=0;k<W.S;k++)if(W.sk[k]!==2&&eq[k]>0)nz.push(eq[k]);nz.sort((a,b)=>a-b);const m50=Math.max(nz[nz.length>>1]||1e-6,1e-7);let r=777;
+     for(let k=0;k<W.S;k++){r=(r*16807)%2147483647;W.str[k]=Math.max(3*eq[k],BRK*m50)*(.85+.3*r/2147483647)}W.brkS=1;W.m50=m50;W.rec=null}
+    for(let k=0;k<W.N;k++){W.w[k]=0;W.ox[k]=W.px[k];W.oy[k]=W.py[k];W.hit[k]=0}W.breaks=0;
+    parts=[];bombs=[];waves=[];berg=null;W.berg=null;saw=null;said={};bottomed=0;pieces=1;simT=0;
+    const sw=(SP.x1-SP.x0);cam.z=cam.zt=Math.min(Wpx*.72/sw,Hpx*.5/((SP.y1-SP.y0)*1.6));cam.x=0;cam.y=(SP.y1-SP.y0)*.25-W.offY*0;cam.um=1;cam.ox=0;cam.oy=0;
+    upInfo();if(!helloed){helloed=1;say('hello','Pick a tool, then touch the ship!')}}catch(e){console.error(e);msg('Could not build this ship.')}
+    q('#sbxLoad').hidden=true},30)}
+
+/* ---------- sea: storm swell + giant waves ---------- */
+const sech2=x=>{const e=Math.exp(-2*Math.abs(x));return 4*e/((1+e)*(1+e))};
+function swell(){const L=spec?spec.L:100;return{A:clampN(L*.032,.8,5)*storm,k:2*Math.PI/clampN(L*.8,18,220)}}
+let SW={A:0,k:.03};
+function surf(x){let y=0;if(SW.A>0){const w=Math.sqrt(9.8*SW.k);y+=SW.A*(Math.sin(SW.k*x-w*simT)+.35*Math.sin(SW.k*1.9*x-w*1.38*simT+1.3))}for(const g of waves)y+=g.A*sech2((x-g.x)/g.wd);return y}
+function wvx(x,y){let v=0;if(SW.A>0){const w=Math.sqrt(9.8*SW.k);v+=SW.A*w*Math.sin(SW.k*x-w*simT)*Math.exp(SW.k*Math.min(0,y))}for(const g of waves){const s=sech2((x-g.x)/g.wd);v+=g.c*g.A*s/(g.A+g.wd*.25)*Math.exp(Math.min(0,y)/(g.wd*.6))*1.6}return v}
+
+/* ---------- iceberg ---------- */
+function makeBerg(x,dir){const L=spec.L,sz=clampN(L*.32,6,110),pts=[];const n=11;
+  for(let i=0;i<n;i++){const a=i/n*Math.PI*2,up=Math.sin(a)>0,rx=sz*.55*(.85+Math.random()*.3),ry=(up?sz*.42:sz*.85)*(.85+Math.random()*.3);pts.push([Math.cos(a)*rx,Math.sin(a)*ry])}
+  // convex hull
+  pts.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);const lo=[],hi=[];for(const p of pts){while(lo.length>1&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p)}for(let i=pts.length-1;i>=0;i--){const p=pts[i];while(hi.length>1&&cr(hi[hi.length-2],hi[hi.length-1],p)<=0)hi.pop();hi.push(p)}
+  const P=lo.slice(0,-1).concat(hi.slice(0,-1));
+  const b={P,x,y:0,vx:dir*clampN(L*.022,1,4),vy:0,sz,drift:1,drag:null,hitT:0,
+    collide(W){const{px,py,ox,oy}=W,N=W.N,P=b.P,np=P.length,r2=b.sz*b.sz;const H=W.H||1/480;
+      for(let k=0;k<N;k++){const lx=px[k]-b.x,ly=py[k]-b.y;if(lx*lx+ly*ly>r2)continue;let best=-1e9,bi=-1;
+        for(let i=0;i<np;i++){const a=P[i],c=P[(i+1)%np],ex=c[0]-a[0],ey=c[1]-a[1],l=Math.hypot(ex,ey),nx=ey/l,ny=-ex/l,d=(lx-a[0])*nx+(ly-a[1])*ny;if(d>0){bi=-1;break}if(d>best){best=d;bi=i}}
+        if(bi<0)continue;const a=P[bi],c=P[(bi+1)%np],ex=c[0]-a[0],ey=c[1]-a[1],l=Math.hypot(ex,ey),nx=ey/l,ny=-ex/l;
+        px[k]-=best*nx;py[k]-=best*ny;let vx=px[k]-ox[k],vy=py[k]-oy[k];const vn=vx*nx+vy*ny,vb=(b.vx*nx+b.vy*ny)*H;
+        if(vn<vb){const imp=(vb-vn)/H;vx+=(vb-vn)*nx;vy+=(vb-vn)*ny;vx*=.9;vy*=.9;ox[k]=px[k]-vx;oy[k]=py[k]-vy;
+          if(imp>.6&&!W.hit[k]){W.hit[k]=1;b.hitT=.3;if(b.drift){b.drift=0;gash(px[k],b.vx>0?1:-1)}if(py[k]<surf(px[k])||Math.random()<.3)breakNode(k,.8)}}}}};
+  return b}
+function gash(x0,dir){const L=spec.L,T=spec.T,len=L*.3;let n=0;for(let k=0;k<W.N;k++){if(!W.hull[k]||W.deg[k]===0)continue;const along=(W.px[k]-x0)*dir;if(along<-W.h*2||along>len)continue;const ly=W.py[k]-W.offY;if(ly<T*.12||ly>T*.85)continue;if(W.py[k]>surf(W.px[k]))continue;if(Math.random()<.45){breakNode(k,.5);n++}}}
+function breakNode(k,p){const{sa,sb,S}=W;if(!W.nodeSpr){W.nodeSpr=Array.from({length:W.N},()=>[]);for(let s=0;s<S;s++){W.nodeSpr[sa[s]].push(s);W.nodeSpr[sb[s]].push(s)}}for(const s of W.nodeSpr[k])if(Math.random()<p)sbxBreak(W,s)}
+
+/* ---------- tools ---------- */
+function nearest(x,y,maxD){let best=-1,bd=maxD*maxD;for(let k=0;k<W.N;k++){if(W.deg[k]===0)continue;const dx=W.px[k]-x,dy=W.py[k]-y,d=dx*dx+dy*dy;if(d<bd){bd=d;best=k}}return best}
+function explode(x,y){const L=spec.L,Rr=clampN(L*.05,2.5,15);SND.boom();cam.shake=Math.min(1.2,.5+Rr*.05);flash=.5;
+  const{px,py,ox,oy,N,S,sa,sb}=W,H=1/480;
+  for(let s=0;s<S;s++){if(!W.alive[s])continue;const mx=(px[sa[s]]+px[sb[s]])/2-x,my=(py[sa[s]]+py[sb[s]])/2-y,d=Math.sqrt(mx*mx+my*my);if(d<Rr&&Math.random()<Math.pow(1-d/Rr,.5)*.95)sbxBreak(W,s)}
+  for(let k=0;k<N;k++){const dx=px[k]-x,dy=py[k]-y,d=Math.sqrt(dx*dx+dy*dy)||.01;if(d<Rr*2.4){const f=(1-d/(Rr*2.4))*clampN(L*.12,8,28)*H;ox[k]-=dx/d*f;oy[k]-=dy/d*f;if(d<Rr*1.3&&py[k]>surf(px[k]))W.burn[k]=Math.max(W.burn[k],5+Math.random()*4)}}
+  for(let i=0;i<40;i++){const a=Math.random()*Math.PI*2,v=(4+Math.random()*14)*clampN(L/100,.5,1.6);parts.push({t:'spark',x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:.5+Math.random()*.6,m:1.1})}
+  for(let i=0;i<14;i++)parts.push({t:'smoke',x:x+(Math.random()-.5)*Rr,y:y+(Math.random()-.5)*Rr,vx:(Math.random()-.5)*2,vy:1+Math.random()*2,l:3+Math.random()*2,m:5,s:Rr*(.4+Math.random()*.5)});
+  parts.push({t:'flash',x,y,l:.35,m:.35,s:Rr*2.2});
+  if(Math.abs(y-surf(x))<Rr*1.2){splash(x,Rr*1.4,30);}
+  if(y<surf(x))for(let i=0;i<30;i++)parts.push({t:'bub',x:x+(Math.random()-.5)*Rr*2,y:y+(Math.random()-.5)*Rr*2,vx:0,vy:2+Math.random()*3,l:6,m:6,s:.2+Math.random()*.6})}
+function splash(x,wd,n){SND.splash();const L=spec.L;for(let i=0;i<n;i++){const s=surf(x);parts.push({t:'drop',x:x+(Math.random()-.5)*wd,y:s,vx:(Math.random()-.5)*wd*.8,vy:(3+Math.random()*9)*clampN(L/120,.5,1.5),l:3,m:3,s:.15+Math.random()*.35})}}
+function sawCut(x0,y0,x1,y1){const{px,py,sa,sb,S}=W;let n=0;const minx=Math.min(x0,x1),maxx=Math.max(x0,x1),miny=Math.min(y0,y1),maxy=Math.max(y0,y1),pad=W.h*2.2;
+  for(let s=0;s<S;s++){if(!W.alive[s])continue;const ax=px[sa[s]],ay=py[sa[s]];if(ax<minx-pad||ax>maxx+pad||ay<miny-pad||ay>maxy+pad)continue;const bx_=px[sb[s]],by_=py[sb[s]];
+    const d1=(x1-x0)*(ay-y0)-(y1-y0)*(ax-x0),d2=(x1-x0)*(by_-y0)-(y1-y0)*(bx_-x0);if(d1*d2>0)continue;const d3=(bx_-ax)*(y0-ay)-(by_-ay)*(x0-ax),d4=(bx_-ax)*(y1-ay)-(by_-ay)*(x1-ax);if(d3*d4>0)continue;
+    if(sbxBreak(W,s)){n++;if(Math.random()<.25)parts.push({t:'spark',x:ax,y:ay,vx:(Math.random()-.5)*8,vy:Math.random()*8,l:.35,m:.35})}}
+  if(n&&performance.now()-sawSnd>70){sawSnd=performance.now();SND.saw()}return n}
+function sendWave(dir){const L=spec.L,A=clampN(L*.11,2.5,26),wd=clampN(L*.33,10,85),c=dir*clampN(L*.09,7,17);const cx=shipCenter().x;waves.push({x:cx-dir*(shipSpan()*.6+wd*3),A:0,A0:A,wd,c,t:0});say('wave'+waves.length,'Here comes a giant wave!')}
+function shipCenter(){let sx=0,sy=0,n=0;for(let k=0;k<W.N;k+=3){if(W.deg[k]===0)continue;sx+=W.px[k];sy+=W.py[k];n++}return n?{x:sx/n,y:sy/n}:{x:0,y:0}}
+function shipSpan(){return SP?SP.x1-SP.x0:100}
+
+/* ---------- input ---------- */
+const ptrs=new Map();let pinch=null,grabP=null,sawP=null,dragB=null;
+function toWorld(cx,cy){return{x:(cx-Wpx/2)/cam.z+cam.x,y:(Hpx/2-cy)/cam.z+cam.y}}
+fg.addEventListener('pointerdown',e=>{ac();if(!W)return;fg.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(ptrs.size===2){const[a,b]=[...ptrs.values()];pinch={d:Math.hypot(a.x-b.x,a.y-b.y),um:cam.um,mx:(a.x+b.x)/2,my:(a.y+b.y)/2,ox:cam.ox,oy:cam.oy};W.grab=null;grabP=null;sawP=null;dragB=null;return}
+  if(ptrs.size>2)return;const p=toWorld(e.clientX,e.clientY),pr=36/cam.z;
+  if(tool==='grab'){const k=nearest(p.x,p.y,pr*1.6);if(k>=0){W.grab={k,x:p.x,y:p.y};grabP=e.pointerId}}
+  else if(tool==='saw'){sawP={id:e.pointerId,x:p.x,y:p.y};saw={pts:[[p.x,p.y]]}}
+  else if(tool==='bomb'){const k=nearest(p.x,p.y,pr*1.5);if(k<0){msg('Put the bomb on the ship!');return}if(bombs.length>=10)return;bombs.push({k,t:1.6});SND.crack()}
+  else if(tool==='berg'){if(berg&&Math.hypot(p.x-berg.x,p.y-berg.y)<berg.sz*.7){dragB={id:e.pointerId,dx:berg.x-p.x,dy:berg.y-p.y};berg.drift=0;return}
+    const c=shipCenter(),dir=p.x<c.x?1:-1;berg=makeBerg(p.x,dir);berg.y=0;W.berg=berg;dragB={id:e.pointerId,dx:0,dy:0};SND.ice()}
+  else if(tool==='wave'){const c=shipCenter();sendWave(p.x<c.x?1:-1)}});
+fg.addEventListener('pointermove',e=>{if(!ptrs.has(e.pointerId)||!W)return;ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pinch&&ptrs.size===2){const[a,b]=[...ptrs.values()],d=Math.hypot(a.x-b.x,a.y-b.y);cam.um=clampN(pinch.um*d/pinch.d,.35,5);cam.ox=pinch.ox-((a.x+b.x)/2-pinch.mx)/cam.z;cam.oy=pinch.oy+((a.y+b.y)/2-pinch.my)/cam.z;return}
+  const p=toWorld(e.clientX,e.clientY);
+  if(grabP===e.pointerId&&W.grab){W.grab.x=p.x;W.grab.y=p.y}
+  if(sawP&&sawP.id===e.pointerId){const n=sawCut(sawP.x,sawP.y,p.x,p.y);sawP.x=p.x;sawP.y=p.y;saw.pts.push([p.x,p.y]);if(saw.pts.length>40)saw.pts.shift()}
+  if(dragB&&dragB.id===e.pointerId&&berg){const nx=p.x+dragB.dx,ny=clampN(p.y+dragB.dy,-berg.sz*.9,berg.sz*.5);berg.vx=(nx-berg.x)/Math.max(.016,1/60);berg.vy=(ny-berg.y)/Math.max(.016,1/60);berg.tx=nx;berg.ty=ny}});
+function up(e){ptrs.delete(e.pointerId);if(ptrs.size<2)pinch=null;if(grabP===e.pointerId){W&&(W.grab=null);grabP=null}if(sawP&&sawP.id===e.pointerId){sawP=null;setTimeout(()=>{if(!sawP)saw=null},400)}if(dragB&&dragB.id===e.pointerId){dragB=null;if(berg){berg.tx=berg.ty=null;berg.vx=Math.sign(berg.vx||1)*Math.min(Math.abs(berg.vx),clampN(spec.L*.03,1,5));berg.vy=0;berg.drift=1}}}
+fg.addEventListener('pointerup',up);fg.addEventListener('pointercancel',up);
+el.querySelectorAll('#sbxTools button').forEach(b=>b.onclick=()=>{tool=b.dataset.t;syncTools();const tips={grab:'Touch the ship and pull it!',berg:'Tap the sea to make an iceberg. Drag it into the ship!',bomb:'Tap the ship to put a bomb on it.',saw:'Draw a line across the ship to cut it.',wave:'Tap on one side to send a giant wave.'};msg(tips[tool])});
+function syncTools(){el.querySelectorAll('#sbxTools button').forEach(b=>b.classList.toggle('on',b.dataset.t===tool))}
+q('#sbxPlay').onclick=()=>{paused=!paused;q('#sbxPlay').textContent=paused?'Play':'Pause';q('#sbxPlay').classList.toggle('on',paused)};
+q('#sbxSpeed').onclick=()=>{speed=speed===1?2:speed===2?4:1;q('#sbxSpeed').textContent='Speed ×'+speed};
+q('#sbxStorm').onclick=()=>{stormOn=!stormOn;q('#sbxStorm').classList.toggle('on',stormOn);if(stormOn){said.storm=0;say('storm','A big storm is coming!');lightT=2}};
+q('#sbxVoice').onclick=()=>{voice=!voice;q('#sbxVoice').classList.toggle('on',voice);if(!voice)try{speechSynthesis.cancel()}catch(e){}};
+q('#sbxFix').onclick=()=>{if(spec)start(spec)};
+q('#sbxExit').onclick=close;q('#sbxShips').onclick=openPick;q('#sbxPickX').onclick=()=>{q('#sbxPick').hidden=true;if(!spec)close()};
+
+/* ---------- picker ---------- */
+const thumbs={};let thumbQ=0;
+function openPick(){const g=q('#sbxGrid');q('#sbxPick').hidden=false;g.innerHTML=SPECS.map(s=>'<button class="sbxc" data-id="'+s.id+'"><div class="im" id="sbt_'+s.id+'">'+(thumbs[s.id]?'<img alt="" src="'+thumbs[s.id]+'">':'Building…')+'</div><div class="tx"><b>'+esc(s.name)+'</b><small>'+esc(s.sub)+' · '+s.L+' m</small></div></button>').join('');
+  g.querySelectorAll('.sbxc').forEach(b=>b.onclick=()=>{const s=SPECS.find(x=>x.id===b.dataset.id);q('#sbxPick').hidden=true;stormOn=false;q('#sbxStorm').classList.remove('on');start(s)});
+  const run=++thumbQ;let i=0;const next=()=>{if(run!==thumbQ||q('#sbxPick').hidden||!on)return;while(i<SPECS.length&&thumbs[SPECS[i].id])i++;if(i>=SPECS.length)return;const s=SPECS[i++];try{const sp=makeSprite(s,440,200);thumbs[s.id]=spriteURL(sp);sp.rt.dispose();const b=document.getElementById('sbt_'+s.id);if(b)b.innerHTML='<img alt="" src="'+thumbs[s.id]+'">'}catch(e){console.warn(e)}setTimeout(next,20)};setTimeout(next,60)}
+
+/* ---------- open / close ---------- */
+function open(){if(typeof view3d!=='undefined'&&view3d)close3d();if(driving)exitDrive();on=true;el.hidden=false;initGL();resize();paused=false;q('#sbxPlay').textContent='Pause';q('#sbxPlay').classList.remove('on');syncTools();
+  if(!spec)start(SPECS.find(s=>s.id==='titanic')||SPECS[0]);try{speechSynthesis.cancel()}catch(e){}}
+function close(){on=false;el.hidden=true;q('#sbxPick').hidden=true;try{speechSynthesis.cancel()}catch(e){}if(typeof syncChrome==='function')syncChrome()}
+function resize(){dpr=Math.min(2,devicePixelRatio||1);const w=innerWidth,h=innerHeight;if(w===Wpx&&h===Hpx&&bg.width===Math.round(w*dpr))return;Wpx=w;Hpx=h;for(const c of[bg,fg]){c.width=Math.round(w*dpr);c.height=Math.round(h*dpr)}R.r.setPixelRatio(dpr);R.r.setSize(w,h,false)}
+
+/* ---------- update ---------- */
+function update(dt){const st=dt*speed;simT+=st;
+  // storm & waves
+  storm+=((stormOn?1:0)-storm)*Math.min(1,dt*.6);SW=swell();
+  for(let i=waves.length-1;i>=0;i--){const g=waves[i];g.t+=st;g.x+=g.c*st;g.A=g.A0*Math.min(1,g.t/3);if(Math.abs(g.x-shipCenter().x)>shipSpan()*1.2+g.wd*5&&g.t>8)waves.splice(i,1)}
+  // iceberg
+  if(berg){if(berg.tx!=null){berg.x+=(berg.tx-berg.x)*.5;berg.y+=(berg.ty-berg.y)*.5}else{const fl=surf(berg.x)*.7+berg.sz*.04;berg.vy=(fl-berg.y)*1.5;if(!berg.drift)berg.vx*=Math.pow(.5,st);berg.x+=berg.vx*st;berg.y+=berg.vy*st}
+    if(berg.hitT>0){berg.hitT-=dt;if(!said.berg){say('berg','Crash! The iceberg hit the ship!');SND.ice()}}}
+  // physics
+  const n=Math.min(24,Math.max(1,Math.round(st*480))),H=st/n;W.H=H;for(let i=0;i<n;i++)sbxStep(W,H);sbxPost(W,Math.min(.1,st));
+  if(W.newBreaks>0){const now=performance.now();if(now-lastCrack>110){lastCrack=now;SND.crack()}}
+  // bombs
+  for(let i=bombs.length-1;i>=0;i--){const b=bombs[i];b.t-=st;if(b.t<=0){explode(W.px[b.k],W.py[b.k]);bombs.splice(i,1)}}
+  // particles
+  for(const k of funs)if(W.py[k]>surf(W.px[k])+1&&Math.random()<dt*6)parts.push({t:'smoke',x:W.px[k],y:W.py[k],vx:-.6-storm*3,vy:1.5+Math.random(),l:4,m:4,s:spec.L*.012+.4,dark:spec.smoke==='dark'||spec.smoke==='coal'});
+  let air=0;for(let k=0;k<W.N;k++){if(W.burn[k]>0){W.burn[k]-=st*(W.py[k]<surf(W.px[k])?6:.5);if(W.burn[k]>0&&Math.random()<dt*3)parts.push({t:'fire',x:W.px[k],y:W.py[k],vx:(Math.random()-.5),vy:2+Math.random()*2,l:.8,m:.8,s:W.h*(.8+Math.random())})}}
+  if(W.inflow>0){const ch=Math.min(6,W.inflow*.6);for(let i=0;i<ch;i++){const k=(Math.random()*W.N)|0;if(W.w[k]>.05&&W.w[k]<.95&&W.py[k]<surf(W.px[k]))parts.push({t:'bub',x:W.px[k],y:W.py[k],vx:0,vy:1.5+Math.random()*2,l:8,m:8,s:.15+Math.random()*.4})}}
+  for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.l-=st;if(p.l<=0){parts.splice(i,1);continue}
+    if(p.t==='drop'||p.t==='spark'){p.vy-=9.8*st;p.x+=p.vx*st;p.y+=p.vy*st;if(p.t==='drop'&&p.vy<0&&p.y<surf(p.x)){parts.splice(i,1)}}
+    else if(p.t==='bub'){p.x+=Math.sin(p.l*5+i)*.3*st;p.y+=p.vy*st;if(p.y>surf(p.x)){parts.splice(i,1)}}
+    else if(p.t==='smoke'||p.t==='fire'||p.t==='mud'){p.x+=p.vx*st;p.y+=p.vy*st;p.vx*=1-.3*st}}
+  if(parts.length>900)parts.splice(0,parts.length-900);
+  // big splashes when pieces hit the surface fast
+  if(Math.random()<.3){for(let t=0;t<6;t++){const k=(Math.random()*W.N)|0,vy=(W.py[k]-W.oy[k])/H,s=surf(W.px[k]);if(Math.abs(W.py[k]-s)<W.h&&Math.abs(vy)>4){for(let j=0;j<4;j++)parts.push({t:'drop',x:W.px[k],y:s,vx:(Math.random()-.5)*4,vy:2+Math.random()*Math.abs(vy)*.6,l:2,m:2,s:.15+Math.random()*.3});break}}}
+  // seabed puffs + events
+  let hit=0;for(let k=0;k<W.N;k+=2)if(W.hit[k]&&W.py[k]<-floorD*.6)hit++;
+  if(hit>W.N*.04&&!bottomed){bottomed=1;for(let i=0;i<40;i++){const c=shipCenter();parts.push({t:'mud',x:c.x+(Math.random()-.5)*shipSpan(),y:W.floor(c.x)+Math.random()*3,vx:(Math.random()-.5)*4,vy:Math.random()*1.5,l:6,m:6,s:spec.L*.03+1})}say('bottom','The ship has reached the bottom of the sea.')}
+  if(!W.gone){W.gone=new Uint8Array(W.N);W.age=new Float32Array(W.N)}for(let k=0;k<W.N;k++)if(W.deg[k]===0&&!W.gone[k]){W.age[k]+=dt;if(W.age[k]>5)W.gone[k]=1}
+  let wt=0;for(let k=0;k<W.N;k++)wt+=W.w[k]<1?W.w[k]:1;W.water=wt/W.N;if(W.water>.03)say('water','Water is coming in!');
+  pieceT-=dt;if(pieceT<=0){pieceT=.5;pieces=countPieces();if(pieces>=2)say('split','Oh no! The ship is breaking apart!')}
+  if(storm>.5){lightT-=dt;if(lightT<=0){lightT=4+Math.random()*7;flash=.9;setTimeout(()=>on&&SND.thunder(),300+Math.random()*900)}}
+  if(W.water>.08&&Math.random()<dt*.15)SND.groan()}
+function countPieces(){const N=W.N,seen=new Int32Array(N).fill(-1);if(!W.nodeSpr){W.nodeSpr=Array.from({length:N},()=>[]);for(let s=0;s<W.S;s++){W.nodeSpr[W.sa[s]].push(s);W.nodeSpr[W.sb[s]].push(s)}}let big=0;
+  if(!W.psz)W.psz=new Int32Array(N);const sizes=[];
+  for(let k0=0;k0<N;k0++){if(seen[k0]>=0)continue;let n=0;const st=[k0],mem=[];seen[k0]=k0;while(st.length){const k=st.pop();n++;mem.push(k);for(const s of W.nodeSpr[k]){if(!W.alive[s])continue;const o=W.sa[s]===k?W.sb[s]:W.sa[s];if(seen[o]<0){seen[o]=k0;st.push(o)}}}for(const k of mem)W.psz[k]=n;sizes.push(n);if(n>N*.12)big++}
+  let mx=0;for(const n of sizes)if(n>mx)mx=n;W.pmin=Math.min(mx,Math.max(8,N*.03));return big}
+/* ---------- render ---------- */
+function upInfo(){if(!W)return;let lo=0;const pm=W.pmin||1;for(let k=0;k<W.N;k+=2)if(W.deg[k]>0&&(!W.psz||W.psz[k]>=pm)&&W.py[k]<lo)lo=W.py[k];const dep=Math.max(0,-lo-spec.T),real=Math.round(Math.min(1,dep/floorD)*spec.sea);
+  q('#sbxInfo').innerHTML='Water inside <i>'+Math.round((W.water||0)*100)+'%</i>';q('#sbxInfo2').innerHTML=(bottomed?'Reached the sea floor · ':'Deepest part ')+'<i>'+real.toLocaleString('en-US')+' m</i>'}
+let infoT=0;
+function sx(x){return(x-cam.x)*cam.z+Wpx/2}function sy(y){return Hpx/2-(y-cam.y)*cam.z}
+function render(dt){resize();if(!W)return;
+  // camera: fit the ship pieces
+  let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;const pm=W.pmin||1;for(let k=0;k<W.N;k+=2){if(W.deg[k]===0||W.psz&&W.psz[k]<pm)continue;const x=W.px[k],y=W.py[k];if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
+  if(x0>x1){x0=-10;x1=10;y0=-10;y1=10}
+  const bw=Math.max(x1-x0,shipSpan()*.9),bh=Math.max(y1-y0,(SP.y1-SP.y0)*1.4)+(y1>-5?Math.max(0,8-y1):0);
+  const zt=Math.min(Wpx*.72/bw,(Hpx-190)*.8/bh)*cam.um;cam.zt=zt;cam.z+=(zt-cam.z)*Math.min(1,dt*2);
+  const tx=(x0+x1)/2+cam.ox,ty=(y0+y1)/2+(y1-y0)*.05+cam.oy+12/cam.z;cam.x+=(tx-cam.x)*Math.min(1,dt*2.5);cam.y+=(ty-cam.y)*Math.min(1,dt*2.5);
+  let shx=0,shy=0;if(cam.shake>0){cam.shake-=dt;shx=(Math.random()-.5)*cam.shake*14;shy=(Math.random()-.5)*cam.shake*14}
+  const z=cam.z,stormK=storm;
+  // ---- background
+  bx.setTransform(dpr,0,0,dpr,shx*dpr,shy*dpr);
+  const syS=sy(0),skyTop=stormK>0?mixC([111,182,234],[38,50,62],stormK):'rgb(111,182,234)',skyBot=stormK>0?mixC([206,233,247],[88,104,118],stormK):'rgb(206,233,247)';
+  let g=bx.createLinearGradient(0,syS-Hpx,0,syS);g.addColorStop(0,skyTop);g.addColorStop(1,skyBot);bx.fillStyle=g;bx.fillRect(-20,-20,Wpx+40,Hpx+40);
+  if(stormK<.6){bx.globalAlpha=1-stormK/.6;bx.fillStyle='#fff6d0';bx.beginPath();bx.arc(Wpx*.82,Math.min(syS-140,Hpx*.2),34,0,7);bx.fill();bx.globalAlpha=1}
+  // clouds
+  bx.fillStyle=stormK>.3?'rgba(70,80,92,.85)':'rgba(255,255,255,.85)';for(let i=0;i<6;i++){const cx=((i*397+simT*(4+stormK*20))%(Wpx+400))-200,cy=syS-90-((i*131)%Math.max(60,Math.min(380,syS-60)));if(cy<-60)continue;cloud(bx,cx,cy,40+i%3*16)}
+  // sea body with depth gradient
+  const top=sy(0),bot=sy(-floorD);g=bx.createLinearGradient(0,top,0,bot);g.addColorStop(0,stormK>0?mixC([38,120,176],[40,80,100],stormK):'#2678b0');g.addColorStop(.35,'#0f4f80');g.addColorStop(1,'#031321');
+  bx.fillStyle=g;bx.beginPath();const step=8;bx.moveTo(-20,Hpx+20);for(let X=-20;X<=Wpx+20;X+=step){const wx=(X-Wpx/2)/z+cam.x;bx.lineTo(X,sy(surf(wx)))}bx.lineTo(Wpx+20,Hpx+20);bx.closePath();bx.fill();
+  // light rays
+  if(top<Hpx){bx.save();bx.globalAlpha=.07*(1-stormK);bx.fillStyle='#bfe6ff';for(let i=0;i<5;i++){const xr=((i*263+simT*3)%(Wpx+300))-150;bx.beginPath();bx.moveTo(xr,top);bx.lineTo(xr+60,top);bx.lineTo(xr+220,top+Hpx*.9);bx.lineTo(xr+120,top+Hpx*.9);bx.fill()}bx.restore()}
+  // seabed
+  if(bot<Hpx+200){bx.fillStyle='#5b4a33';bx.beginPath();bx.moveTo(-20,Hpx+20);for(let X=-20;X<=Wpx+20;X+=step){const wx=(X-Wpx/2)/z+cam.x;bx.lineTo(X,sy(W.floor(wx)))}bx.lineTo(Wpx+20,Hpx+20);bx.closePath();bx.fill();
+    bx.fillStyle='rgba(20,30,40,.55)';bx.fill();bx.strokeStyle='rgba(160,140,100,.35)';bx.lineWidth=2;bx.beginPath();for(let X=-20;X<=Wpx+20;X+=step){const wx=(X-Wpx/2)/z+cam.x;X===-20?bx.moveTo(X,sy(W.floor(wx))):bx.lineTo(X,sy(W.floor(wx)))}bx.stroke()}
+  // ---- ship (WebGL)
+  if(W.dirty){const idx=[];const C=W.cells;for(let c=0;c<C.length;c++)if(W.cellAlive[c]){const k=C[c];idx.push(k[0],k[1],k[3],k[0],k[3],k[2])}R.geo.setIndex(idx);W.dirty=false}
+  const pa=R.geo.attributes.position.array,aw=R.geo.attributes.aw.array,ab=R.geo.attributes.ab.array;for(let k=0;k<W.N;k++){pa[k*3]=W.px[k];pa[k*3+1]=W.py[k];aw[k]=W.w[k]<1?W.w[k]:1;ab[k]=W.burn[k]>0?1:ab[k]*.999}
+  R.geo.attributes.position.needsUpdate=true;R.geo.attributes.aw.needsUpdate=true;R.geo.attributes.ab.needsUpdate=true;
+  const c=R.cam,ox_=-shx/z,oy_=shy/z;c.left=cam.x-Wpx/2/z+ox_;c.right=cam.x+Wpx/2/z+ox_;c.top=cam.y+Hpx/2/z+oy_;c.bottom=cam.y-Hpx/2/z+oy_;c.updateProjectionMatrix();R.r.render(R.sc,c);
+  // ---- foreground
+  fx.setTransform(dpr,0,0,dpr,0,0);fx.clearRect(0,0,Wpx,Hpx);fx.setTransform(dpr,0,0,dpr,shx*dpr,shy*dpr);
+  // loose bits
+  for(let k=0;k<W.N;k++)if(W.deg[k]===0&&!(W.gone&&W.gone[k])){const X=sx(W.px[k]),Y=sy(W.py[k]);if(X<-10||X>Wpx+10||Y<-10||Y>Hpx+10)continue;const s=Math.max(2,W.h*z*.9);fx.globalAlpha=W.age?Math.min(1,(5-W.age[k])/2):1;fx.fillStyle=ncol[k];fx.fillRect(X-s/2,Y-s/2,s,s)}fx.globalAlpha=1;
+  // iceberg
+  if(berg){fx.save();fx.translate(sx(berg.x),sy(berg.y));fx.scale(z,-z);const P=berg.P;fx.beginPath();P.forEach((p,i)=>i?fx.lineTo(p[0],p[1]):fx.moveTo(p[0],p[1]));fx.closePath();const gg=fx.createLinearGradient(-berg.sz*.4,berg.sz*.4,berg.sz*.4,-berg.sz*.6);gg.addColorStop(0,'#ffffff');gg.addColorStop(.5,'#d9f1ff');gg.addColorStop(1,'#8fc8e8');fx.fillStyle=gg;fx.fill();
+    fx.strokeStyle='rgba(120,180,220,.8)';fx.lineWidth=1.5/z;fx.stroke();fx.fillStyle='rgba(150,205,235,.5)';fx.beginPath();fx.moveTo(P[0][0]*.3,P[0][1]*.2);for(let i=2;i<P.length;i+=3)fx.lineTo(P[i][0]*.45,P[i][1]*.45);fx.closePath();fx.fill();fx.restore()}
+  // bombs
+  for(const b of bombs){const X=sx(W.px[b.k]),Y=sy(W.py[b.k]),r=Math.max(9,Math.min(22,spec.L*.012*z));fx.fillStyle='#151515';fx.beginPath();fx.arc(X,Y,r,0,7);fx.fill();fx.fillStyle=(b.t*6|0)%2?'#ff3b2a':'#ffdd55';fx.beginPath();fx.arc(X+r*.6,Y-r*.9,r*.35,0,7);fx.fill();fx.fillStyle='rgba(255,255,255,.35)';fx.beginPath();fx.arc(X-r*.35,Y-r*.35,r*.3,0,7);fx.fill()}
+  // smoke, fire (above water) and other particles
+  for(const p of parts){const X=sx(p.x),Y=sy(p.y);if(X<-80||X>Wpx+80||Y<-80||Y>Hpx+80)continue;const a=p.l/p.m;
+    if(p.t==='smoke'){const r=(p.s||2)*z*(1.6-a);fx.fillStyle=p.dark?'rgba(40,40,44,'+(a*.45)+')':'rgba(225,225,225,'+(a*.5)+')';fx.beginPath();fx.arc(X,Y,Math.max(2,r),0,7);fx.fill()}
+    else if(p.t==='fire'){const r=Math.max(2,p.s*z*a);fx.fillStyle='rgba(255,'+(120+a*120|0)+',40,'+a+')';fx.beginPath();fx.arc(X,Y,r,0,7);fx.fill()}
+    else if(p.t==='spark'){fx.fillStyle='rgba(255,230,140,'+Math.min(1,a*1.5)+')';fx.fillRect(X-1.5,Y-1.5,3,3)}
+    else if(p.t==='flash'){const r=p.s*z*(1.2-a*.5);const gr=fx.createRadialGradient(X,Y,0,X,Y,r);gr.addColorStop(0,'rgba(255,250,210,'+a+')');gr.addColorStop(.4,'rgba(255,170,60,'+a*.8+')');gr.addColorStop(1,'rgba(255,90,20,0)');fx.fillStyle=gr;fx.beginPath();fx.arc(X,Y,r,0,7);fx.fill()}}
+  // water overlay (tints everything under the surface)
+  fx.fillStyle=stormK>0?'rgba(24,82,120,.36)':'rgba(22,92,150,.30)';fx.beginPath();fx.moveTo(-20,Hpx+20);for(let X=-20;X<=Wpx+20;X+=step){const wx=(X-Wpx/2)/z+cam.x;fx.lineTo(X,sy(surf(wx)))}fx.lineTo(Wpx+20,Hpx+20);fx.closePath();fx.fill();
+  const deep=clampN((-cam.y-20)/(floorD*.8),0,1);if(deep>0){fx.fillStyle='rgba(2,10,20,'+deep*.22+')';fx.fill()}
+  fx.strokeStyle='rgba(235,248,255,.85)';fx.lineWidth=2;fx.beginPath();for(let X=-20;X<=Wpx+20;X+=step){const wx=(X-Wpx/2)/z+cam.x;X===-20?fx.moveTo(X,sy(surf(wx))):fx.lineTo(X,sy(surf(wx)))}fx.stroke();
+  // underwater + splash particles
+  for(const p of parts){const X=sx(p.x),Y=sy(p.y);if(X<-20||X>Wpx+20||Y<-20||Y>Hpx+20)continue;const a=p.l/p.m;
+    if(p.t==='bub'){const r=Math.max(1.5,p.s*z);fx.strokeStyle='rgba(220,245,255,.7)';fx.lineWidth=1;fx.beginPath();fx.arc(X,Y,r,0,7);fx.stroke()}
+    else if(p.t==='drop'){const r=Math.max(1.5,p.s*z);fx.fillStyle='rgba(230,248,255,.85)';fx.beginPath();fx.arc(X,Y,r,0,7);fx.fill()}
+    else if(p.t==='mud'){const r=p.s*z*(1.5-a*.5);fx.fillStyle='rgba(120,100,70,'+a*.35+')';fx.beginPath();fx.arc(X,Y,r,0,7);fx.fill()}}
+  // rain
+  if(stormK>.05){fx.strokeStyle='rgba(200,215,230,'+(.35*stormK)+')';fx.lineWidth=1;fx.beginPath();const nR=(160*stormK)|0;for(let i=0;i<nR;i++){const rx=((i*97.3+simT*260)%(Wpx+100))-50,ry=((i*61.7+simT*900)%(Hpx+60))-30;fx.moveTo(rx,ry);fx.lineTo(rx-6,ry+18)}fx.stroke()}
+  // saw line / grab rope
+  if(saw&&saw.pts.length>1){fx.strokeStyle='rgba(255,90,60,.9)';fx.lineWidth=4;fx.setLineDash([10,6]);fx.beginPath();saw.pts.forEach((p,i)=>i?fx.lineTo(sx(p[0]),sy(p[1])):fx.moveTo(sx(p[0]),sy(p[1])));fx.stroke();fx.setLineDash([])}
+  if(W.grab){const k=W.grab.k;fx.strokeStyle='#e3ae4c';fx.lineWidth=3;fx.beginPath();fx.moveTo(sx(W.px[k]),sy(W.py[k]));fx.lineTo(sx(W.grab.x),sy(W.grab.y));fx.stroke();fx.fillStyle='#e3ae4c';fx.beginPath();fx.arc(sx(W.grab.x),sy(W.grab.y),9,0,7);fx.fill()}
+  if(flash>0){fx.setTransform(dpr,0,0,dpr,0,0);fx.fillStyle='rgba(255,255,255,'+flash*.6+')';fx.fillRect(0,0,Wpx,Hpx);flash-=dt*2.5}
+  infoT-=dt;if(infoT<=0){infoT=.3;upInfo()}
+  if(msgT>0){msgT-=dt;if(msgT<=0)q('#sbxMsg').classList.remove('show')}}
+function mixC(a,b,t){return'rgb('+(a[0]+(b[0]-a[0])*t|0)+','+(a[1]+(b[1]-a[1])*t|0)+','+(a[2]+(b[2]-a[2])*t|0)+')'}
+function cloud(c,x,y,r){c.beginPath();c.arc(x,y,r,0,7);c.arc(x+r*.9,y+r*.2,r*.75,0,7);c.arc(x-r*.9,y+r*.25,r*.7,0,7);c.arc(x+r*.3,y-r*.45,r*.65,0,7);c.fill()}
+function frame(dt){if(!W||!R){return}if(!paused&&q('#sbxPick').hidden&&q('#sbxLoad').hidden)update(Math.min(dt,1/30));render(dt)}
+if(location.protocol==='file:'||location.hostname==='127.0.0.1')window.__sbx={get W(){return W},get cam(){return cam},explode:(x,y)=>explode(x,y),wave:d=>sendWave(d),saw:(a,b,c,d)=>sawCut(a,b,c,d),berg:x=>{berg=makeBerg(x,x<0?1:-1);W.berg=berg},storm:v=>{stormOn=v},speed:v=>{speed=v;q('#sbxSpeed').textContent='Speed ×'+v},start:id=>start(SPECS.find(s=>s.id===id)),brk:v=>{BRK=v},update:d=>update(d)};
+return{open,close,get on(){return on},frame}})();
+
+$('#mSandbox').onclick=()=>Sandbox.open();
 AvMaker.bind();$('#mAvatar').onclick=()=>AvMaker.open();$('#mStory').onclick=()=>Sink.openPicker();$('#mSearch').onclick=()=>{Sink.openPicker();setTimeout(()=>{const q=$('#skQ');if(q){q.focus();q.select()}},80)};$('#mDive').onclick=()=>Wreck.openPicker();
 /* ---------- Save / boot ---------- */
 function save(){try{localStorage.setItem('sbt-world-v1',JSON.stringify(S))}catch(e){}}
 function validWorld(o){return o&&Array.isArray(o.ships)&&Array.isArray(o.ice)&&Array.isArray(o.boats)&&Array.isArray(o.swim)&&o.cam}
 let last=performance.now(),uiT=0,miniF=0;
 function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;perf=now;
-  try{if(Wreck.on){Wreck.frame(dt);return requestAnimationFrame(frame)}if(Sink.on){Sink.frame(dt);return requestAnimationFrame(frame)}if(Story.on){Story.frame(dt);return requestAnimationFrame(frame)}if(Dive.on){Dive.frame(dt);return requestAnimationFrame(frame)}update(dt);if(view3d&&R3)r3frame(dt);else{render();if(++miniF%4===0)drawMini()}if(driving)updHud(dt);uiT-=dt;if(uiT<=0){uiT=.4;renderCard();updStats()}}catch(err){console.error(err)}
+  try{if(Wreck.on){Wreck.frame(dt);return requestAnimationFrame(frame)}if(Sandbox.on){Sandbox.frame(dt);return requestAnimationFrame(frame)}if(Sink.on){Sink.frame(dt);return requestAnimationFrame(frame)}if(Story.on){Story.frame(dt);return requestAnimationFrame(frame)}if(Dive.on){Dive.frame(dt);return requestAnimationFrame(frame)}update(dt);if(view3d&&R3)r3frame(dt);else{render();if(++miniF%4===0)drawMini()}if(driving)updHud(dt);uiT-=dt;if(uiT<=0){uiT=.4;renderCard();updStats()}}catch(err){console.error(err)}
   requestAnimationFrame(frame)}
 function updStats(){const el=$('#stats');const inB=S.boats.reduce((a,b)=>a+b.pax.length,0),sw=S.swim.length;if(!S.saved&&!inB&&!sw){el.hidden=true}else{el.hidden=false;el.innerHTML='<span>Safe <b>'+S.saved+'</b></span><span>In lifeboats <b>'+inB+'</b></span><span>Swimming <b>'+sw+'</b></span>'}
   const[lon,lat]=toLL(S.cam.x,S.cam.y);$('#coords').textContent=lat.toFixed(2)+'°N '+Math.abs(lon).toFixed(2)+'°'+(lon<0?'W':'E')}
