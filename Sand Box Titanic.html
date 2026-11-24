@@ -6814,7 +6814,8 @@ const ENV={
  tropical:{top:'#bff2ff',hor:'#1696b8',bot:'#06405a',fog:.019,sun:3.2,caus:1.3,sand:'#e8dcbc',rust:'#7a5a40',grow:'#8a6a7a',grow2:'#c0507a',silt:'#d8ccb0',growAmt:.85,temp:'27 °C'},
  temperate:{top:'#c8f0e8',hor:'#2f7a7f',bot:'#0b3138',fog:.03,sun:2.4,caus:.8,sand:'#a89c80',rust:'#6a4a30',grow:'#5a7a4a',grow2:'#a08a50',silt:'#9c917a',growAmt:.75,temp:'16 °C'},
  cold:{top:'#cfe8ea',hor:'#3d6f78',bot:'#0c2a32',fog:.036,sun:2,caus:.5,sand:'#8c8a7c',rust:'#5a3a28',grow:'#c8c0b0',grow2:'#e8a070',silt:'#8a8678',growAmt:.9,temp:'7 °C'},
- kelp:{top:'#d8f5d0',hor:'#2c7c6c',bot:'#0c3a30',fog:.026,sun:2.8,caus:1.1,sand:'#b8a882',rust:'#6a4a30',grow:'#6a7a3a',grow2:'#8a4a6a',silt:'#a8a088',growAmt:.7,temp:'14 °C'}};
+ kelp:{top:'#d8f5d0',hor:'#2c7c6c',bot:'#0c3a30',fog:.026,sun:2.8,caus:1.1,sand:'#b8a882',rust:'#6a4a30',grow:'#6a7a3a',grow2:'#8a4a6a',silt:'#a8a088',growAmt:.7,temp:'14 °C'},
+ deep:{top:'#c2dcec',hor:'#356d8c',bot:'#0a1e2c',fog:.024,sun:6.5,caus:0,sand:'#6f6758',rust:'#4a2f20',grow:'#9aa6a0',grow2:'#b2895c',silt:'#7d7568',growAmt:.35,temp:'2 °C'}};
 let R=null,on=false,site=null,env=null,scene=null,W=null,camP,vel,yaw=0,pitch=0,joy={x:0,y:0},vert=0,auto=null,near=null,lockP=null,lights=false,voice=true,POIS=[],markers={},factT=0,fish=[],bubbles=[],bubT=0,animals=[];
 const U={uTime:{value:0},uCaus:{value:1},uRust:{value:new THREE.Color()},uGrow:{value:new THREE.Color()},uGrow2:{value:new THREE.Color()},uSilt:{value:new THREE.Color()},uGrowAmt:{value:.8},uSway:{value:1}};
 const NZ=`float wh(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
@@ -6913,12 +6914,12 @@ function domeMat(e){return new THREE.ShaderMaterial({side:THREE.BackSide,depthWr
 #include <encodings_fragment>
 }`})}
 function groundH(x,z){const s=site;let h=Math.sin(x*.045)*.9+Math.sin(z*.06+x*.02)*.7+Math.sin(x*.21+z*.17)*.18;if(W&&W.scour){for(const sc of W.scour){const d=Math.hypot((x-sc[0])/sc[2],(z-sc[1])/sc[3]);if(d<1.4)h+=(d<1?-.6:.0)+Math.max(0,1-Math.abs(d-1.15)/.25)*.9}}return h-s.depth}
-function buildSite(id){site=SITES.find(s=>s.id===id);env=ENV[site.env];const e=env,sc=new THREE.Scene(),rn=Math.random;U.uRust.value=C(e.rust);U.uGrow.value=C(e.grow);U.uGrow2.value=C(e.grow2);U.uSilt.value=C(e.silt);U.uGrowAmt.value=e.growAmt;U.uCaus.value=e.caus;
+function buildSite(id){site=SITES.find(s=>s.id===id);env=ENV[site.env];if(R&&R.spot){const dp=site.env==='deep';R.spot.distance=dp?320:90;R.spot.angle=dp?.85:.55;R.spot.decay=dp?0:1;R.spot.penumbra=dp?.9:.6}const e=env,sc=new THREE.Scene(),rn=Math.random;U.uRust.value=C(e.rust);U.uGrow.value=C(e.grow);U.uGrow2.value=C(e.grow2);U.uSilt.value=C(e.silt);U.uGrowAmt.value=e.growAmt;U.uCaus.value=e.caus;
   sc.fog=new THREE.FogExp2(C(e.hor),e.fog);sc.background=null;const dome=new THREE.Mesh(new THREE.SphereGeometry(400,32,16),domeMat(e));dome.frustumCulled=false;sc.add(dome);
   const depth=site.depth,att=Math.exp(-depth/45);const sun=new THREE.DirectionalLight(C(e.top).lerp(C(e.hor),.35),e.sun*(.45+.55*att));sun.position.set(30,100,20);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.bias=-.0005;sun.shadow.normalBias=.05;sc.add(sun,sun.target);
-  sc.add(new THREE.HemisphereLight(C(e.top),C(e.sand).multiplyScalar(.4),.9*(.5+.5*att)));sc.add(new THREE.AmbientLight(C(e.hor),.35));
+  sc.add(new THREE.HemisphereLight(C(e.top),C(e.sand).multiplyScalar(.4),.9*(.5+.5*att)));sc.add(new THREE.AmbientLight(C(e.hor),.35));if(site.env==='deep'){sc.add(new THREE.HemisphereLight(C('#b8dcf0'),C('#7b828a'),2.1));sc.add(new THREE.AmbientLight(C('#9cc3d8'),.95));const yw2=site.yaw||0;for(const sgn of[1,-1]){const fl=new THREE.DirectionalLight(C('#dceefa'),1.5);fl.position.set(Math.sin(yw2)*120*sgn,70,Math.cos(yw2)*120*sgn);fl.target.position.copy(new THREE.Vector3(0,-site.depth,0));sc.add(fl,fl.target)}}
   W={sc,dome,sun,parts:[],anim:[],kelp:[],rays:[],scour:[],center:new THREE.Vector3(0,-depth,0)};
-  const s=SPECS.find(x=>x.id===site.ship);const sh=build3(s);W.spec=s;
+  const s=site.specObj||SPECS.find(x=>x.id===site.ship);const sh=build3(s);W.spec=s;
   // seabed
   const g=new THREE.PlaneGeometry(420,420,210,210).rotateX(-PI/2),p=g.attributes.position;for(let i=0;i<p.count;i++)p.setY(i,groundH(p.getX(i),p.getZ(i))+depth);g.computeVertexNormals();const sand=R.sandT.clone();sand.needsUpdate=true;sand.repeat.set(70,70);
   const gm=new THREE.Mesh(g,std({map:sand,color:C(e.sand),roughness:1},{sand:1}));gm.position.y=-depth;gm.receiveShadow=true;sc.add(gm);W.ground=gm;
@@ -6932,13 +6933,16 @@ function buildSite(id){site=SITES.find(s=>s.id===id);env=ENV[site.env];const e=e
   sun.target.position.copy(W.center);sun.position.copy(W.center).add(new THREE.Vector3(40,120,30));const ext=Math.max(60,s.L*.7);Object.assign(sun.shadow.camera,{left:-ext,right:ext,top:ext,bottom:-ext,near:10,far:400});sun.shadow.camera.updateProjectionMatrix();
   scene=sc}
 function build3(s){const sh=build(s,{single:!site.broken});const e=env,rn=Math.random;
-  sh.root.traverse(o=>{if(o.isMesh||o.isInstancedMesh){const ms=Array.isArray(o.material)?o.material:[o.material];const nm=ms.map(m=>{if(!m.isMeshStandardMaterial)return m;m.emissiveIntensity=0;m.roughness=Math.max(.8,m.roughness);m.metalness=.08;m.clippingPlanes=[];if(m.color)m.color.multiplyScalar(.85);return patch(m,{age:1})});o.material=Array.isArray(o.material)?nm:nm[0];o.castShadow=true;o.receiveShadow=true}if(o.isLineSegments||o.userData.sail||o.userData.flag)o.visible=false});
+  sh.root.traverse(o=>{if(o.isMesh||o.isInstancedMesh){const ms=Array.isArray(o.material)?o.material:[o.material];const nm=ms.map(m=>{if(!m.isMeshStandardMaterial)return m;m.emissiveIntensity=0;m.roughness=Math.max(.8,m.roughness);m.metalness=.08;m.clippingPlanes=[];if(m.color){m.color.multiplyScalar(.85*(1-Math.min(.5,site.scorch||0)*.5));const lum=(m.color.r+m.color.g+m.color.b)/3;if(lum<.1)m.color.lerp(new THREE.Color(.19,.17,.15),.7);if(site.env==='deep')m.color.lerp(new THREE.Color(.46,.45,.42),.5)}return patch(m,{age:1})});o.material=Array.isArray(o.material)?nm:nm[0];o.castShadow=true;o.receiveShadow=true}if(o.isLineSegments||o.userData.sail||o.userData.flag)o.visible=false});
   for(const part of sh.parts){part.interior.visible=false;for(const b of part.boats){if(!b.raft&&Math.random()<.85)b.obj.visible=false}}
   const parts=sh.parts,n=parts.length;W.parts=[];
   parts.forEach((part,i)=>{const hold=new THREE.Group();W.sc.add(hold);hold.add(part.group);hold.rotation.order='YZX';
     const brk=n>1,cx=(part.xa+part.xb)/2;part.group.position.set(-cx,0,0);
-    const yaw=(site.yaw||0)+(brk?(i?.35:-.25):0),roll=site.roll*(brk?(i?.8:1.25):1),pitch=(site.pitch||0)+(brk?(i?-.06:.08):0);hold.rotation.set(roll,yaw,pitch);
-    const off=brk?(i?1:-1)*(s.L*.25+site.gap*.5):0;hold.position.set(Math.cos(yaw)*off,0,-Math.sin(yaw)*off);hold.updateMatrixWorld(true);
+    const po=site.pose&&site.pose[i]||null,
+      yaw=(site.yaw||0)+(brk?(i?.35:-.25):0),
+      roll=po&&po.roll!=null?po.roll:site.roll*(brk?(i?.8:1.25):1),
+      pitch=po&&po.pitch!=null?po.pitch:(site.pitch||0)+(brk?(i?-.06:.08):0);hold.rotation.set(roll,yaw,pitch);
+    const off=po&&po.off!=null?po.off:(brk?(i?1:-1)*(s.L*.25+site.gap*.5):0);hold.position.set(Math.cos(yaw)*off,0,-Math.sin(yaw)*off);hold.updateMatrixWorld(true);
     const box=new THREE.Box3().setFromObject(part.group);hold.position.y+=(-site.depth+groundH(hold.position.x,hold.position.z)+site.depth)-box.min.y-(site.bury||1);hold.updateMatrixWorld(true);
     W.parts.push({hold,part,cx});W.scour.push([hold.position.x,hold.position.z,(part.xb-part.xa)*.55+4,s.B*.9+4])});
   // re-displace ground later (scour) — handled in groundH via W.scour (ground built after)
@@ -7005,7 +7009,7 @@ function updFish(dt){const t=U.uTime.value;for(const grp of fish){for(const s of
   for(const a of animals){if(a.p.distanceTo(a.t)<3)a.t=randPt(2,12);tmpV.copy(a.t).sub(a.p).normalize().multiplyScalar(a.sp);a.v.lerp(tmpV,dt*.4);a.p.addScaledVector(a.v,dt);const g=groundH(a.p.x,a.p.z);if(a.p.y<g+1.5)a.p.y=g+1.5;a.g.position.copy(a.p);const ty=Math.atan2(-a.v.z,a.v.x);a.yaw+=angDiff(ty,a.yaw)*Math.min(1,dt*1.5);a.g.rotation.set(0,a.yaw,clamp(a.v.y*.5,-.4,.4),'YXZ');const fl=Math.sin(U.uTime.value*1.6);a.fl.forEach((f,i)=>{f.rotation.x=(i<2?fl*.55:fl*.25)*(f.position.z>0?1:-1);f.rotation.y=i<2?.3*(f.position.z>0?-1:1):0})}}
 /* ---------- POIs ---------- */
 function W2(part,x,y,z){const v=new THREE.Vector3(x,y,z);part.group.localToWorld(v);return v}
-function makePOIs(){const s=W.spec,ps=W.parts,first=ps[0].part,last=ps[ps.length-1].part,e=site.env,life=e==='tropical'?'corals and sponges':e==='cold'?'white sea anemones':e==='kelp'?'seaweed and sea stars':'seaweed, sponges and sea stars';POIS=[];
+function makePOIs(){const s=W.spec,ps=W.parts,first=ps[0].part,last=ps[ps.length-1].part,e=site.env,life=e==='tropical'?'corals and sponges':e==='cold'?'white sea anemones':e==='kelp'?'seaweed and sea stars':e==='deep'?'pale deep-sea anemones':'seaweed, sponges and sea stars';POIS=[];
   POIS.push({id:'bow',n:'The Bow',p:W2(last,s.L*.97,deckY(s,.97),0),f:'This is the bow, the front of the ship. Now it is covered with '+life+'.'});
   POIS.push({id:'stern',n:'The Stern',p:W2(first,s.L*.03,deckY(s,.03),0),f:'The stern, the back of the ship. Look for the name painted on it: '+s.label+'.'});
   POIS.push({id:'prop',n:'Propeller',p:W2(first,s.L*.035,s.T*.38,0),f:'The ship\'s propeller. It spun around to push the ship through the water. Now fish hide behind it.'});
@@ -7019,7 +7023,8 @@ function makePOIs(){const s=W.spec,ps=W.parts,first=ps[0].part,last=ps[ps.length
   const ff={tropical:[['Reef life','Corals grow only about one centimeter a year. This wreck has become a home for thousands of animals.'],['turtle','Sea turtle','A green sea turtle! Turtles can rest underwater for hours.'],['shark','Reef shark','A reef shark. It looks scary, but it is shy and stays away from divers.']],
     temperate:[['Reef life','Wrecks become artificial reefs. Seaweed, sponges and sea stars cover every surface.'],['school','Fish school','A school of fish swims together to stay safe. Hundreds of fish move like one big animal!']],
     cold:[['Reef life','Sea anemones look like flowers, but they are animals that catch food with their soft arms.'],['school','Fish school','Pollock and cod love cold water. They hide in the wreck from bigger fish.']],
-    kelp:[['Kelp forest','Giant kelp can grow half a meter in one day! It makes a forest under the sea.'],['garibaldi','Garibaldi','The bright orange garibaldi is California\'s state fish. It guards its home.']]}[e];
+    kelp:[['Kelp forest','Giant kelp can grow half a meter in one day! It makes a forest under the sea.'],['garibaldi','Garibaldi','The bright orange garibaldi is California\'s state fish. It guards its home.']],
+    deep:[['Deep-sea life','No sunlight reaches this deep. Pale anemones and brittle stars grow on the cold steel.'],['school','Deep-sea fish','Fish down here are small and pale, and some of them make their own light.']]}[e];
   const rs=W.reefSpots.length?W.reefSpots[(Math.random()*W.reefSpots.length)|0]:ps[0].hold.position;POIS.push({id:'reef',n:ff[0][0],p:rs.clone().add(new THREE.Vector3(0,1,0)),f:ff[0][1]});
   for(const q of ff.slice(1))POIS.push({id:q[0],n:q[1],f:q[2],dyn:q[0]});
   roomPOIs();renderPlaces()}
@@ -7489,7 +7494,7 @@ function makeThumbs(){const Wt=560,Ht=320,r=new THREE.WebGLRenderer({antialias:t
     const cam=new THREE.PerspectiveCamera(40,Wt/Ht,.5,3000),d=sp.L*.85+12;cam.position.set(d*.55,sp.D*.9+d*.3,d*.7);cam.lookAt(sp.L*.05,sp.D*.35,0);r.render(sc,cam);thumbs[st.id]=r.domElement.toDataURL('image/jpeg',.85);const box=document.getElementById('wt_'+st.id);if(box)box.innerHTML='<img alt="" src="'+thumbs[st.id]+'">';
     sc.traverse(o=>{if(o.geometry)o.geometry.dispose()});setTimeout(next,40)};next()}
 function open(id){if(id==='titanic'){close(true);Dive.open();return}if(!R)init();if(Sink.on)Sink.close();on=true;el.hidden=false;$('#wkPick').hidden=true;$('#wkHud').hidden=false;$('#wkIntro').hidden=false;$('#wkIntroT').textContent='Diving to the '+SITES.find(s=>s.id===id).name+' wreck';
-  setTimeout(()=>{disposeSite();buildSite(id);const s=W.spec,c=new THREE.Vector3();W.parts.forEach(q=>c.add(q.hold.position));c.multiplyScalar(1/W.parts.length);const yw=site.yaw||0,ax=new THREE.Vector3(Math.cos(yw),0,-Math.sin(yw)),pp=new THREE.Vector3(Math.sin(yw),0,Math.cos(yw)),dd=s.B*1.4+Math.min(40,s.L*.22)+10;camP.copy(c).addScaledVector(pp,dd).addScaledVector(ax,s.L*.18);camP.y=groundH(camP.x,camP.z)+Math.min(12,site.depth*.45);for(let k=0;k<8&&inWreck(camP,2);k++)camP.addScaledVector(pp,8);const lk=W.center.copy(c);yaw=Math.atan2(lk.x-camP.x,-(lk.z-camP.z));pitch=-.18;vel.set(0,0,0);auto=null;lockP=null;near=null;lights=site.depth>45;U.uTime.value=0;
+  setTimeout(()=>{disposeSite();buildSite(id);const s=W.spec,c=new THREE.Vector3();W.parts.forEach(q=>c.add(q.hold.position));c.multiplyScalar(1/W.parts.length);const yw=site.yaw||0,ax=new THREE.Vector3(Math.cos(yw),0,-Math.sin(yw)),pp=new THREE.Vector3(Math.sin(yw),0,Math.cos(yw)),spread=W.parts.length>1?W.parts[0].hold.position.distanceTo(W.parts[W.parts.length-1].hold.position):0,mine=site.id==='_sbx',dd=s.B*1.4+Math.min(40,s.L*.22)+10+(mine?spread*(site.env==='deep'?.1:.5):0);camP.copy(c).addScaledVector(pp,dd).addScaledVector(ax,s.L*.18);camP.y=groundH(camP.x,camP.z)+Math.min(mine?9+spread*(site.env==='deep'?.02:.07):12,site.depth*.45);for(let k=0;k<8&&inWreck(camP,2);k++)camP.addScaledVector(pp,8);const lk=W.center.copy(c);yaw=Math.atan2(lk.x-camP.x,-(lk.z-camP.z));pitch=mine?clamp(Math.atan2(lk.y+s.D*.35-camP.y,Math.hypot(lk.x-camP.x,lk.z-camP.z)),-.35,.12):-.18;vel.set(0,0,0);auto=null;lockP=null;near=null;lights=site.depth>45;U.uTime.value=0;
     $('#wkIntro').hidden=true;$('#wkName').textContent=SITES.find(q=>q.id===id).name;updHud(true);showFact('Welcome to the '+site.name+' wreck, '+site.depth+' meters under the sea. '+site.blurb+' Use the joystick to swim, or tap Places.','You made it!')},60)}
 function disposeSite(){if(room)leaveRoom();if(!scene)return;scene.remove(R.cam);scene.remove(R.snow);scene.traverse(o=>{if(o.geometry&&!(GG&&Object.values(GG).includes(o.geometry)))o.geometry.dispose();if(o.material){(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose())}});for(const k in markers){markers[k].remove();delete markers[k]}scene=null;W=null;fish=[];animals=[]}
 function close(keep){if(TOUR){endTour();return}on=false;el.hidden=true;try{speechSynthesis.cancel()}catch(e){}disposeSite();if(!keep)syncChrome()}
@@ -7500,7 +7505,7 @@ function frame(dt){if(!R)return;if(TOUR&&TOUR.deck){deckFrameW(dt);return}if(!sc
   if(auto){const to=auto.to;tmp.copy(to).sub(camP);const d=tmp.length();if(d<.6||joy.y||joy.x){if(d<.6&&auto.p){lockP=auto.p;near=auto.p;showFact(auto.p.f,auto.p.n)}auto=null}else{const sp=Math.min(9,d*1.2+1.5);camP.addScaledVector(tmp.normalize(),Math.min(d,sp*dt));const lk=auto.p?poiPos(auto.p):to;yaw+=angDiff(Math.atan2(lk.x-camP.x,-(lk.z-camP.z)),yaw)*Math.min(1,dt*2.5);pitch+=(Math.atan2(lk.y-camP.y,Math.hypot(lk.x-camP.x,lk.z-camP.z))-pitch)*Math.min(1,dt*2.5);if(auto.p&&auto.p.dyn){const pp=poiPos(auto.p);auto.to=pp.clone().add(tmp.set(camP.x-pp.x,0,camP.z-pp.z).normalize().multiplyScalar(4)).setY(pp.y+.5)}}}
   yaw+=joy.x*dt*1.3;const flat=new THREE.Vector3(Math.sin(yaw),0,-Math.cos(yaw));tmp.copy(flat).multiplyScalar(-joy.y*5).add(new THREE.Vector3(0,vert*3,0));vel.lerp(tmp,Math.min(1,dt*2));camP.addScaledVector(vel,dt);
   const g=groundH(camP.x,camP.z);if(camP.y<g+.9)camP.y=g+.9;if(camP.y>-1.5)camP.y=-1.5;const c=W.parts[0].hold.position;camP.x=clamp(camP.x,c.x-190,c.x+190);camP.z=clamp(camP.z,c.z-190,c.z+190);pushOut();
-  R.cam.position.copy(camP);R.cam.rotation.set(pitch,-yaw,0,'YXZ');R.spot.intensity=lights?3:0;
+  R.cam.position.copy(camP);R.cam.rotation.set(pitch,-yaw,0,'YXZ');R.spot.intensity=lights?(env===ENV.deep?3.6:3):0;
   // env per depth
   const dp=-camP.y,att=Math.exp(-dp/45);W.dome.material.uniforms.uDim.value=.35+.65*Math.exp(-dp/60);
   // rays
@@ -7533,7 +7538,7 @@ function bindInput(){const jz=$('#wkJoy'),knob=$('#wkKnob');let jid=null,jc=null
 if((location.protocol==='file:'||location.hostname==='127.0.0.1'))window.__wk={open,look:(x,y,z,yw,pt)=>{camP.set(x,y,z);yaw=yw;pitch=pt},get W(){return W},get cam(){return camP},goto:id=>goTo(POIS.find(p=>p.id===id)),fishAt:(i)=>{const g=fish[i||0];const c=g.schools[0].c;camP.set(c.x+4,c.y+.5,c.z+4);yaw=Math.atan2(c.x-camP.x,-(c.z-camP.z));pitch=-.1;return JSON.stringify({sp:g.sp,c:c.toArray().map(Math.round),n:g.list.length,p0:g.list[0].p.toArray().map(Math.round)})},pois:()=>POIS.map(p=>p.id),lv:()=>{const l=room&&room.lv;const L=Sink.live();return l?JSON.stringify({rl:+l.rl.toFixed(2),sea:+l.seaS.toFixed(2),comp:l.comp,a:l.a,holes:L.P&&L.P.holes.map(h=>[h.c,+h.jet.toFixed(2),Math.round(h.x),+h.y.toFixed(1)]),C:L.P&&L.P.C,th:L.P&&+L.P.th.toFixed(3),ph:L.phase,t:L.P&&L.P.t}):'none'},poi:id=>POIS.find(p=>p.id===id).p.toArray(),enter:k=>enterRoom(k),leave:()=>leaveRoom(),get room(){return room},talk:i=>openTalk(room.lv.people[i]),sk:()=>{const L=Sink.live();return JSON.stringify({walk:L.walk,sup:L.spec.sup.map(t=>[t.x0,t.x1,t.y,t.h,t.w,t.z||0]),L:L.spec.L,D:L.spec.D,B:L.spec.B})},joy:(x,y)=>{joy.x=x;joy.y=y},deck:i=>goDeck(i),goin:i=>tourRoom(i,'deck'),bst:()=>JSON.stringify({deck:TOUR&&TOUR.deck,b:room&&room.lv?room.lv.camL:null,yaw}),setb:(x,z,yw)=>{room.lv.camL.set(x,0,z);yaw=yw},stick:()=>{try{socialTick(5,room.lv,room.r)}catch(e){return 'E '+e.message+e.stack}return JSON.stringify(room.lv.people.map(p=>[p.conv,!!p.el]))},sdbg:()=>JSON.stringify(room.lv.people.map(p=>[p.act,p.lead,p.conv&&p.conv.t,p.nextLine,!!p.el,p.bub&&p.bub.t])),send:t=>talkSend(t),ppl:()=>room.lv.people.map(p=>p.name+'|'+p.role+'|'+p.act+'|'+p.st).join('; '),rlook:(x,y,z,yw,pt)=>{camP.set(x,y,z);room.r.g.localToWorld(camP);yaw=yw;pitch=pt}};
 return{open,openPicker,close,tour,tourDive,get on(){return on},frame,
  custom(o){const st=Object.assign({id:'_sbx',env:'deep',depth:1000,roll:.2,pitch:.02,yaw:.3,bury:2,place:'',blurb:''},o);
-  if(!SPECS.find(q=>q.id===st.ship))return false;const i=SITES.findIndex(q=>q.id==='_sbx');if(i>=0)SITES[i]=st;else SITES.push(st);open('_sbx');return true}}})();
+  if(!SPECS.find(q=>q.id===st.ship))return false;if(!ENV[st.env])st.env='cold';if(st.specObj&&st.specObj.brk)st.broken=1;const i=SITES.findIndex(q=>q.id==='_sbx');if(i>=0)SITES[i]=st;else SITES.push(st);open('_sbx');return true}}})();
 
 
 /* ---------- Ship Sandbox (2D soft-body ships, Floating Sandbox style) ---------- */
@@ -7725,7 +7730,10 @@ function newWorld(s,sp){const spanX=sp.x1-sp.x0,spanY=sp.y1-sp.y0;let h=spanX/15
     if(n<=2700)break;h*=Math.sqrt(n/2600)}
   const T=s.T,offX=-s.L/2,offY=-T;
   const w=sbxPhys({cols,rows,h,filled:(i,j)=>mask[j*cols+i]===1,x0:sp.x0+offX,y0:sp.y0+offY,x0Local:sp.x0,y0Local:sp.y0,uv:(i,j)=>[(i*h)/(sp.x1-sp.x0),(j*h)/(sp.y1-sp.y0)],deckY:s.D+.3,bulk:s.bulk,bh:s.bh||s.D*.7,T});
-  w.brk=.3;w.kin=2.4;w.offX=offX;w.offY=offY;return w}
+  w.brk=.3;w.kin=2.4;w.offX=offX;w.offY=offY;
+  w.lx=new Float32Array(w.N);w.ly=new Float32Array(w.N);
+  for(let k=0;k<w.N;k++){w.lx[k]=w.px[k]-offX;w.ly[k]=w.py[k]-offY}
+  return w}
 function start(s){spec=s;q('#sbxLoad').hidden=false;q('#sbxName').textContent=s.name;
   setTimeout(()=>{try{
     if(SP&&SP.rt)SP.rt.dispose();SP=makeSprite(s,2048,1400);W=newWorld(s,SP);
@@ -7995,14 +8003,36 @@ function openPick(){const g=q('#sbxGrid');q('#sbxPick').hidden=false;g.innerHTML
 /* ---------- open / close ---------- */
 function openShip(id,damaged){const sp=SPECS.find(s=>s.id===id)||SPECS.find(s=>s.id==='titanic')||SPECS[0];
   pendDmg=damaged?1:0;const need=!spec||spec.id!==sp.id||damaged;if(need)spec=sp;open();if(need)start(sp)}
+function wreckShape(){if(!W.nodeSpr)countPieces();const N=W.N,seen=new Int32Array(N).fill(-1),comps=[];
+  for(let k0=0;k0<N;k0++){if(seen[k0]>=0||W.deg[k0]===0)continue;const st=[k0],mem=[];seen[k0]=k0;
+    while(st.length){const k=st.pop();mem.push(k);for(const s2 of W.nodeSpr[k]){if(!W.alive[s2])continue;const o=W.sa[s2]===k?W.sb[s2]:W.sa[s2];if(seen[o]<0){seen[o]=k0;st.push(o)}}}
+    comps.push(mem)}
+  if(!comps.length)return null;comps.sort((a,b)=>b.length-a.length);
+  const info=c=>{const n=c.length;let mlx=0,mx=0,my=0,lo=1e9,hi=-1e9;
+    for(const k of c){mlx+=W.lx[k];mx+=W.px[k];my+=W.py[k];if(W.lx[k]<lo)lo=W.lx[k];if(W.lx[k]>hi)hi=W.lx[k]}
+    mlx/=n;mx/=n;my/=n;let dx=0,dy=0;
+    for(const k of c){const t=W.lx[k]-mlx;dx+=t*(W.px[k]-mx);dy+=t*(W.py[k]-my)}
+    const dd=Math.hypot(dx,dy)||1;let hs=0,hn=0,ls=0,ln=0;
+    for(const k of c){const ly=W.ly[k];if(ly>spec.D*.8){hs+=W.py[k];hn++}else if(ly<spec.T*.6){ls+=W.py[k];ln++}}
+    return{n,mlx,lo,hi,mx,pitch:Math.asin(clampN(dy/dd,-1,1)),cap:hn>6&&ln>6&&hs/hn<ls/ln}};
+  const A=info(comps[0]),B=comps[1]&&comps[1].length>N*.07?info(comps[1]):null;
+  if(!B)return{broken:0,parts:[A]};
+  const lo_=A.mlx<=B.mlx?A:B,hi_=A.mlx<=B.mlx?B:A;
+  return{broken:1,brk:clampN((lo_.hi+hi_.lo)/2,spec.L*.15,spec.L*.85),
+    sep:clampN(Math.abs(A.mx-B.mx),spec.L*.3,spec.L*1.15),parts:[lo_,hi_]}}
 function diveWreck(){if(!spec)return;const d=spec.sea||1000;
-  let roll=.18,pitch=.03;const A=shipAxis();if(A)pitch=clampN(Math.atan2(A.fy,Math.abs(A.fx)||1e-6),-.5,.5);
-  {let hi=0,hn=0,lo=0,ln=0;for(let k=0;k<W.N;k++){if(W.deg[k]===0)continue;const ly=W.py[k]-W.offY;if(ly>spec.D*.9){hi+=W.py[k];hn++}else if(ly<spec.T*.5){lo+=W.py[k];ln++}}
-   if(hn>8&&ln>8&&hi/hn<lo/ln)roll=2.85}
+  const sh=wreckShape(),pose=[];let burnt=0;for(let k=0;k<W.N;k++)if(W.burn[k]>0||W.hit[k]&&false)burnt++;
+  const scorch=clampN(burnt/Math.max(1,W.N)*2.5,0,.9);
+  if(sh)for(let i=0;i<sh.parts.length;i++){const q=sh.parts[i];
+    pose.push({roll:q.cap?2.75+Math.random()*.3:clampN(.1+Math.random()*.35,.05,.6),
+      pitch:clampN(q.pitch*.38,-.3,.3),
+      off:sh.broken?(i?1:-1)*sh.sep*.5:0})}
   const site={ship:spec.id,name:spec.name,place:'Your wreck \u00b7 '+Math.round(d).toLocaleString('en-US')+' m',
-    env:d>600?'deep':d>90?'cold':'temperate',depth:Math.round(d),roll,pitch,yaw:.35,bury:2,
-    broken:pieces>=2?1:0,gap:pieces>=2?clampN(spec.L*.16,8,48):0,
-    blurb:'This is the '+spec.name+' you sank in the Ship Sandbox. It is a shipwreck now.'};
+    env:d>600?'deep':d>90?'cold':'temperate',depth:Math.round(d),yaw:.35,bury:2,scorch,
+    roll:pose[0]?pose[0].roll:.18,pitch:pose[0]?pose[0].pitch:.03,pose,
+    broken:sh&&sh.broken?1:0,gap:sh&&sh.broken?clampN(sh.sep-spec.L*.5,4,60):0,
+    specObj:sh&&sh.broken?Object.assign({},spec,{brk:sh.brk}):Object.assign({},spec,{brk:0}),
+    blurb:'This is the '+spec.name+' you sank in the Ship Sandbox. It '+(sh&&sh.broken?'broke in two and ':'')+'lies here now.'};
   if(typeof Wreck!=='undefined'&&Wreck.custom&&Wreck.custom(site))close();
   else if(typeof Wreck!=='undefined'&&Wreck.openPicker){close();Wreck.openPicker()}
   else msg('The 3D dive needs 3D graphics on this device.')}
@@ -8174,7 +8204,7 @@ function render(dt){resize();if(!W)return;
 function mixC(a,b,t){return'rgb('+(a[0]+(b[0]-a[0])*t|0)+','+(a[1]+(b[1]-a[1])*t|0)+','+(a[2]+(b[2]-a[2])*t|0)+')'}
 function cloud(c,x,y,r){c.beginPath();c.arc(x,y,r,0,7);c.arc(x+r*.9,y+r*.2,r*.75,0,7);c.arc(x-r*.9,y+r*.25,r*.7,0,7);c.arc(x+r*.3,y-r*.45,r*.65,0,7);c.fill()}
 function frame(dt){if(!W||!R){return}if(!paused&&q('#sbxPick').hidden&&q('#sbxLoad').hidden)update(Math.min(dt,1/30));render(dt)}
-if(location.protocol==='file:'||location.hostname==='127.0.0.1')window.__sbx={get W(){return W},get cam(){return cam},explode:(x,y)=>explode(x,y),wave:d=>sendWave(d),saw:(a,b,c,d)=>sawCut(a,b,c,d),berg:x=>{berg=makeBerg(x,x<0?1:-1);W.berg=berg},storm:v=>{stormOn=v},fire:(x,y)=>ignite(x,y),enemy:x=>makeEnemy(x),plane:d=>makePlane(d),sail:v=>{sailOn=v},get st(){return{enemies,planes,shells,airb,engV,fleeT,fireN:W&&W.fireN}},speed:v=>{speed=v;q('#sbxSpeed').textContent='Speed ×'+v},start:id=>start(SPECS.find(s=>s.id===id)),brk:v=>{BRK=v},update:d=>update(d)};
+if(location.protocol==='file:'||location.hostname==='127.0.0.1')window.__sbx={get W(){return W},get cam(){return cam},explode:(x,y)=>explode(x,y),wave:d=>sendWave(d),saw:(a,b,c,d)=>sawCut(a,b,c,d),berg:x=>{berg=makeBerg(x,x<0?1:-1);W.berg=berg},storm:v=>{stormOn=v},fire:(x,y)=>ignite(x,y),shape:()=>wreckShape(),enemy:x=>makeEnemy(x),plane:d=>makePlane(d),sail:v=>{sailOn=v},get st(){return{enemies,planes,shells,airb,engV,fleeT,fireN:W&&W.fireN}},speed:v=>{speed=v;q('#sbxSpeed').textContent='Speed ×'+v},start:id=>start(SPECS.find(s=>s.id===id)),brk:v=>{BRK=v},update:d=>update(d)};
 return{open,openShip,close,get on(){return on},frame}})();
 
 $('#mSandbox').onclick=()=>Sandbox.open();
