@@ -5,6 +5,7 @@ const CACHE = 'sbt-1';
 const CORE = [
   './',
   './index.html',
+  './futuristic.html',
   './manifest.webmanifest',
   './assets/three.min.js',
   './assets/fonts.css',

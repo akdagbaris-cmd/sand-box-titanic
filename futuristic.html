@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Futuristic Fleet</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#050b16;color:#e8fbff;font-family:'Nunito',ui-rounded,system-ui,-apple-system,'Segoe UI',sans-serif;touch-action:none;user-select:none;-webkit-user-select:none}
+canvas{position:fixed;inset:0;z-index:0;width:100%;height:100%;display:block}
+#top,#info,#bar,#hint{z-index:5}
+#top{position:fixed;left:max(16px,env(safe-area-inset-left));top:max(14px,env(safe-area-inset-top));right:max(16px,env(safe-area-inset-right));display:flex;justify-content:space-between;align-items:flex-start;gap:12px;pointer-events:none}
+h1{margin:0;font-size:clamp(22px,4.6vw,38px);letter-spacing:.04em;text-transform:uppercase;font-weight:900;text-shadow:0 0 18px var(--acc,#19e6ff)}
+h1 small{display:block;font-size:.4em;letter-spacing:.2em;opacity:.7;font-weight:800}
+a.back{pointer-events:auto;text-decoration:none;color:#e8fbff;border:2px solid var(--acc,#19e6ff);border-radius:14px;padding:12px 18px;font-weight:900;background:rgba(5,11,22,.6);backdrop-filter:blur(6px);box-shadow:0 0 14px color-mix(in srgb,var(--acc,#19e6ff) 50%,transparent);white-space:nowrap}
+#info{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(max(16px,env(safe-area-inset-bottom)) + 92px);width:min(92vw,560px);text-align:center;pointer-events:none}
+#info b{display:block;font-size:clamp(26px,6vw,44px);font-weight:900;text-shadow:0 0 22px var(--acc,#19e6ff)}
+#info span{display:block;margin-top:4px;font-size:clamp(14px,2.6vw,19px);font-weight:700;opacity:.88}
+#bar{position:fixed;left:0;right:0;bottom:max(16px,env(safe-area-inset-bottom));display:flex;justify-content:center;align-items:center;gap:12px;padding:0 12px;flex-wrap:wrap}
+button{font:inherit;font-weight:900;font-size:clamp(16px,3vw,20px);color:#e8fbff;background:rgba(5,11,22,.62);backdrop-filter:blur(6px);border:2px solid var(--acc,#19e6ff);border-radius:16px;min-width:64px;min-height:64px;padding:0 20px;cursor:pointer;box-shadow:0 0 14px color-mix(in srgb,var(--acc,#19e6ff) 45%,transparent)}
+button:active{transform:scale(.95)}
+button.on{background:var(--acc,#19e6ff);color:#04101c}
+#dots{display:flex;gap:8px;align-items:center;padding:0 6px}
+#dots i{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.28);display:block}
+#dots i.on{background:var(--acc,#19e6ff);box-shadow:0 0 10px var(--acc,#19e6ff)}
+#hint{position:fixed;left:50%;top:24%;transform:translate(-50%,-50%);pointer-events:none;font-weight:800;opacity:0;transition:opacity 1s;text-align:center}
+</style>
+</head>
+<body>
+<div id="top"><h1>Futuristic Fleet<small>Sand Box Titanic</small></h1><a class="back" href="./index.html" id="back">Back to game</a></div>
+<div id="info"><b id="nm"></b><span id="ds"></span></div>
+<div id="bar"><button id="prev" aria-label="Previous ship">&#9664;</button><div id="dots"></div><button id="next" aria-label="Next ship">&#9654;</button><button id="mode">Space</button><button id="spin" class="on">Spin</button></div>
+<div id="hint">Drag to turn the ship</div>
+<script src="./assets/three.min.js"></script>
+<script>
+(function(){
+var T=THREE,PI=Math.PI;
+var renderer=new T.WebGLRenderer({antialias:true,alpha:false});
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
+renderer.setSize(innerWidth,innerHeight);
+document.body.appendChild(renderer.domElement);
+var scene=new T.Scene();
+scene.background=new T.Color(0x050b16);
+scene.fog=new T.Fog(0x050b16,60,260);
+var cam=new T.PerspectiveCamera(42,innerWidth/innerHeight,.1,1200);
+scene.add(new T.HemisphereLight(0x9fd8ff,0x0a1020,.9));
+var sun=new T.DirectionalLight(0xffffff,1.1);sun.position.set(-20,30,25);scene.add(sun);
+var rim=new T.DirectionalLight(0x6a8cff,.7);rim.position.set(25,10,-30);scene.add(rim);
+
+/* ---------- backdrop: stars, planet, neon sea ---------- */
+var starsG=new T.BufferGeometry(),sp=[];
+for(var i=0;i<900;i++){var a=Math.random()*PI*2,b=Math.acos(Math.random()*1.7-.7),r=500;sp.push(r*Math.sin(b)*Math.cos(a),Math.abs(r*Math.cos(b))*.9+10,r*Math.sin(b)*Math.sin(a))}
+starsG.setAttribute('position',new T.Float32BufferAttribute(sp,3));
+var stars=new T.Points(starsG,new T.PointsMaterial({color:0xffffff,size:1.6,sizeAttenuation:false,fog:false}));scene.add(stars);
+function gradTex(stops){var c=document.createElement('canvas');c.width=c.height=256;var x=c.getContext('2d'),g=x.createLinearGradient(0,0,256,256);stops.forEach(function(s){g.addColorStop(s[0],s[1])});x.fillStyle=g;x.fillRect(0,0,256,256);return new T.CanvasTexture(c)}
+var planet=new T.Mesh(new T.SphereGeometry(60,40,28),new T.MeshBasicMaterial({map:gradTex([[0,'#ff7ad9'],[.5,'#6a4cff'],[1,'#10163a']]),fog:false}));
+planet.position.set(-170,70,-330);scene.add(planet);
+var pring=new T.Mesh(new T.RingGeometry(80,112,64),new T.MeshBasicMaterial({color:0x9fd8ff,transparent:true,opacity:.35,side:T.DoubleSide,fog:false}));
+pring.position.copy(planet.position);pring.rotation.x=PI/2.4;pring.rotation.y=.3;scene.add(pring);
+
+var seaMat=new T.ShaderMaterial({transparent:true,uniforms:{t:{value:0},c:{value:new T.Color(0x19e6ff)}},
+vertexShader:'varying vec2 v;void main(){v=position.xy;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+fragmentShader:'varying vec2 v;uniform float t;uniform vec3 c;void main(){vec2 p=v/6.;p.y+=t*.35;vec2 g=abs(fract(p-.5)-.5)/fwidth(p);float l=1.-min(min(g.x,g.y),1.);float d=length(v)/220.;float fade=clamp(1.-d,0.,1.);vec3 base=vec3(.02,.06,.12);gl_FragColor=vec4(base+c*l*.9*fade,.96*fade+.04);}'});
+var sea=new T.Mesh(new T.PlaneGeometry(520,520),seaMat);sea.rotation.x=-PI/2;sea.position.y=-1.2;scene.add(sea);
+var seaGlow=new T.Mesh(new T.PlaneGeometry(520,520),new T.MeshBasicMaterial({color:0x061a2e,transparent:true,opacity:.9,depthWrite:false}));
+seaGlow.rotation.x=-PI/2;seaGlow.position.y=-1.3;scene.add(seaGlow);
+
+/* ---------- glow sprite ---------- */
+var glowTex=(function(){var c=document.createElement('canvas');c.width=c.height=128;var x=c.getContext('2d'),g=x.createRadialGradient(64,64,0,64,64,64);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.25,'rgba(255,255,255,.55)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,128,128);return new T.CanvasTexture(c)})();
+function glowSprite(col,s){var m=new T.Sprite(new T.SpriteMaterial({map:glowTex,color:col,blending:T.AdditiveBlending,transparent:true,depthWrite:false,fog:false}));m.scale.set(s,s,1);return m}
+
+/* ---------- builders ---------- */
+function mats(acc){return{
+ hull:new T.MeshStandardMaterial({color:0x24476b,metalness:.3,roughness:.45}),
+ trim:new T.MeshStandardMaterial({color:0xdde9f4,metalness:.35,roughness:.35}),
+ dark:new T.MeshStandardMaterial({color:0x101f33,metalness:.5,roughness:.4}),
+ neon:new T.MeshBasicMaterial({color:acc}),
+ glass:new T.MeshStandardMaterial({color:0x9aefff,emissive:acc,emissiveIntensity:.35,transparent:true,opacity:.62,metalness:.1,roughness:.05})
+}}
+function add(g,geo,mat,x,y,z){var m=new T.Mesh(geo,mat);m.position.set(x||0,y||0,z||0);g.add(m);return m}
+function box(g,w,h,d,mat,x,y,z){return add(g,new T.BoxGeometry(w,h,d),mat,x,y,z)}
+function cyl(g,r1,r2,h,mat,x,y,z,seg){return add(g,new T.CylinderGeometry(r1,r2,h,seg||20),mat,x,y,z)}
+function ring(g,r,tube,mat,x,y,z){var m=add(g,new T.TorusGeometry(r,tube,8,32),mat,x,y,z);m.rotation.x=PI/2;return m}
+function dome(g,r,sx,sy,sz,mat,x,y,z){var m=add(g,new T.SphereGeometry(r,24,14,0,PI*2,0,PI/2),mat,x,y,z);m.scale.set(sx,sy,sz);return m}
+function hull(g,L,B,H,m,acc,opt){opt=opt||{};var sh=new T.Shape(),w=B/2,tw=opt.tw||.7;
+ sh.moveTo(-L/2,-w*tw);sh.lineTo(-L*.34,-w);sh.lineTo(L*(opt.mid||.18),-w);
+ sh.quadraticCurveTo(L*.4,-w*(opt.bow||.8),L/2,0);sh.quadraticCurveTo(L*.4,w*(opt.bow||.8),L*(opt.mid||.18),w);
+ sh.lineTo(-L*.34,w);sh.lineTo(-L/2,w*tw);sh.closePath();
+ var geo=new T.ExtrudeGeometry(sh,{depth:H,bevelEnabled:true,bevelSize:.12,bevelThickness:.12,bevelSegments:1});
+ geo.rotateX(-PI/2);var mesh=new T.Mesh(geo,m.hull);g.add(mesh);
+ var e=new T.LineSegments(new T.EdgesGeometry(geo,25),new T.LineBasicMaterial({color:acc}));g.add(e);
+ /* neon band along the side */
+ var band=new T.Mesh(new T.ExtrudeGeometry(sh,{depth:H*.1,bevelEnabled:false}),m.neon);band.geometry.rotateX(-PI/2);band.scale.set(1.004,1,1.035);band.position.y=H*.45;g.add(band);
+ return mesh}
+function thruster(g,x,y,z,r,acc,fl){cyl(g,r,r*1.15,r*1.6,fl.dark,x,y,z,16).rotation.z=PI/2;
+ var gs=glowSprite(acc,r*7);gs.position.set(x-r*1.4,y,z);g.add(gs);g.userData.glows.push({s:gs,base:r*7,ph:Math.random()*6});
+ var core=add(g,new T.CylinderGeometry(r*.75,r*.2,r*2.4,12),fl.neon,x-r*1.7,y,z);core.rotation.z=PI/2;return core}
+function fin(g,pts,thick,mat,x,y,z,rot){var sh=new T.Shape();sh.moveTo(pts[0][0],pts[0][1]);for(var i=1;i<pts.length;i++)sh.lineTo(pts[i][0],pts[i][1]);sh.closePath();
+ var geo=new T.ExtrudeGeometry(sh,{depth:thick,bevelEnabled:false});geo.rotateX(PI/2);var m=new T.Mesh(geo,mat);m.position.set(x,y,z);if(rot)m.rotation.y=rot;g.add(m);return m}
+function mk(acc){var g=new T.Group();g.userData.glows=[];return{g:g,m:mats(acc)}}
+
+var SHIPS=[
+{name:'Titanic-X',acc:0x19e6ff,desc:'The unsinkable liner of the future. Four glowing reactors push it across the sea.',
+ build:function(acc){var o=mk(acc),g=o.g,m=o.m,L=24;hull(g,L,5,1.4,m,acc);
+  box(g,12,.9,3.2,m.trim,-1,1.85,0);box(g,9.5,.9,2.8,m.trim,-1.4,2.75,0);box(g,6.5,.9,2.3,m.trim,-1.8,3.65,0);
+  for(var k=0;k<3;k++){box(g,[11.6,9.1,6.1][k],.22,[3.25,2.85,2.35][k],m.neon,[-1,-1.4,-1.8][k],[1.45,2.35,3.25][k]+.62,0)}
+  dome(g,1.2,1.6,1,1.2,m.glass,4.6,1.4,0);dome(g,1.5,1.4,1.1,1.2,m.glass,-1.8,4.1,0);
+  for(var i=0;i<4;i++){var x=-6+i*2.7;cyl(g,.42,.5,2,m.neon,x,4.1,0).scale.set(1,1,1);cyl(g,.52,.52,.18,m.dark,x,5.15,0);ring(g,.62,.07,m.neon,x,4.5,0);ring(g,.62,.07,m.neon,x,3.8,0)}
+  fin(g,[[-L/2,0],[-L/2-3.2,2.4],[-L/2+4,.4]],.18,m.trim,0,1.1,2.1);fin(g,[[-L/2,0],[-L/2-3.2,-2.4],[-L/2+4,-.4]],.18,m.trim,0,1.1,-2.1);
+  thruster(g,-L/2-.2,.9,1.3,.7,acc,o.m&&{dark:m.dark,neon:m.neon,g:g});thruster(g,-L/2-.2,.9,-1.3,.7,acc,{dark:m.dark,neon:m.neon});
+  return o}},
+{name:'Star Cruiser',acc:0xff4fd8,desc:'A floating city with glass domes, glowing rings and a swimming pool in the sky.',
+ build:function(acc){var o=mk(acc),g=o.g,m=o.m,L=26;hull(g,L,6.4,1.6,m,acc);
+  for(var k=0;k<4;k++){var w=12-k*1.8,y=2.2+k*.95;var d=box(g,w,.8,4.4-k*.4,m.trim,-1.5,y,0);box(g,w+.05,.14,4.5-k*.4,m.neon,-1.5,y+.45,0)}
+  box(g,11.2,.5,3.6,m.glass,-1.5,2.2,0).scale.y=.8;
+  dome(g,2.6,2.2,1.5,1.5,m.glass,-1.5,5.7,0);
+  ring(g,3.1,.1,m.neon,-1.5,5.7,0).scale.set(1.5,1.5,1);
+  dome(g,1.6,1.8,1,1.3,m.glass,6.6,1.6,0);
+  for(var i=0;i<3;i++){ring(g,.8+i*.1,.07,m.neon,-9+i*.1,3.1+i*.5,0).rotation.x=0;}
+  cyl(g,.06,.06,3,m.trim,-7,6,0);add(g,new T.SphereGeometry(.22,10,10),m.neon,-7,7.6,0);
+  fin(g,[[-L/2,0],[-L/2-2.6,3],[-L/2+3,.4]],.16,m.trim,0,1.2,3);fin(g,[[-L/2,0],[-L/2-2.6,-3],[-L/2+3,-.4]],.16,m.trim,0,1.2,-3);
+  thruster(g,-L/2-.2,1,1.8,.85,acc,{dark:m.dark,neon:m.neon});thruster(g,-L/2-.2,1,0,.85,acc,{dark:m.dark,neon:m.neon});thruster(g,-L/2-.2,1,-1.8,.85,acc,{dark:m.dark,neon:m.neon});
+  return o}},
+{name:'Cargo Comet',acc:0x3dffa0,desc:'Carries glowing boxes of treats across the world. Faster than a speedboat!',
+ build:function(acc){var o=mk(acc),g=o.g,m=o.m,L=28;hull(g,L,6,1.5,m,acc,{tw:.8});
+  var cols=[0x19e6ff,0xff4fd8,0xffd23d,0x3dffa0,0x9d7bff,0xff7a3d];
+  for(var r=0;r<3;r++)for(var c=-1;c<=1;c++)for(var i=0;i<6;i++){if(r===2&&(i+c)%3===0)continue;
+   var col=cols[(i*2+c+r*3+9)%cols.length];var b=box(g,3,1.3,1.5,new T.MeshStandardMaterial({color:col,emissive:col,emissiveIntensity:.35,metalness:.3,roughness:.4}),-9+i*3.2+(r?0:0),2.15+r*1.35,c*1.7);
+   var e=new T.LineSegments(new T.EdgesGeometry(b.geometry),new T.LineBasicMaterial({color:0x04101c}));e.position.copy(b.position);g.add(e)}
+  box(g,3,3.4,4.4,m.trim,-12,3.1,0);box(g,3.05,.7,4.45,m.glass,-12,4,0);box(g,3.1,.12,4.5,m.neon,-12,4.9,0);
+  cyl(g,.05,.05,2.4,m.trim,-12,6.3,0);ring(g,.5,.05,m.neon,-12,7,0);
+  box(g,3.5,.5,1.2,m.neon,12,1.7,0).scale.set(1,1,1);
+  thruster(g,-L/2-.2,1,1.5,.75,acc,{dark:m.dark,neon:m.neon});thruster(g,-L/2-.2,1,-1.5,.75,acc,{dark:m.dark,neon:m.neon});
+  fin(g,[[-L/2,0],[-L/2-2.5,2.2],[-L/2+3,.4]],.16,m.trim,0,1.1,2.9);fin(g,[[-L/2,0],[-L/2-2.5,-2.2],[-L/2+3,-.4]],.16,m.trim,0,1.1,-2.9);
+  return o}},
+{name:'Sky Carrier',acc:0x4da3ff,desc:'A giant flat ship where little drones take off and land on glowing runways.',
+ build:function(acc){var o=mk(acc),g=o.g,m=o.m,L=30;hull(g,L,9,1.7,m,acc,{tw:.85,mid:.3,bow:.9});
+  box(g,L*.9,.35,8.8,m.dark,0,1.9,0);
+  for(var i=0;i<12;i++)box(g,1.4,.06,.18,m.neon,-12+i*2.2,2.1,0);
+  box(g,L*.86,.06,.12,m.neon,0,2.1,3.6);box(g,L*.86,.06,.12,m.neon,0,2.1,-3.6);
+  box(g,4,3.6,1.8,m.trim,-3,3.8,4.2);box(g,4.05,.7,1.85,m.glass,-3,4.9,4.2);box(g,4.1,.12,1.9,m.neon,-3,5.7,4.2);
+  ring(g,1.1,.08,m.neon,-3,6.4,4.2);cyl(g,.05,.05,2,m.trim,-3,6.6,4.2);
+  for(var d=0;d<3;d++){var dr=new T.Group();var body=add(dr,new T.ConeGeometry(.45,1.8,4),m.trim,0,0,0);body.rotation.z=-PI/2;fin(dr,[[0,0],[-.9,.9],[-.1,0]],.05,m.neon,0,-.05,.2);fin(dr,[[0,0],[-.9,-.9],[-.1,0]],.05,m.neon,0,-.05,-.2);dr.position.set(6+d*3.2,2.4,-1.8+d*1.8);g.add(dr)}
+  thruster(g,-L/2-.2,1.1,2.8,.9,acc,{dark:m.dark,neon:m.neon});thruster(g,-L/2-.2,1.1,0,.9,acc,{dark:m.dark,neon:m.neon});thruster(g,-L/2-.2,1.1,-2.8,.9,acc,{dark:m.dark,neon:m.neon});
+  return o}},
+{name:'Battle Nova',acc:0xff4d4d,desc:'A fast, pointy defender with laser cannons. It keeps the seas safe.',
+ build:function(acc){var o=mk(acc),g=o.g,m=o.m,L=25;hull(g,L,4.6,1.2,m,acc,{tw:.8,bow:.55,mid:.1});
+  box(g,8,.9,2.6,m.hull,-3,1.65,0);box(g,8.05,.1,.12,m.neon,-3,2.12,1.32);box(g,8.05,.1,.12,m.neon,-3,2.12,-1.32);
+  box(g,3.4,1.2,1.9,m.trim,-5,2.65,0);dome(g,1,1.6,.9,1.1,m.glass,-5,3.2,0);
+  for(var t=0;t<2;t++){var x=t?5:1.6;dome(g,1.1,1,.8,1,m.trim,x,1.25,0);for(var s=-1;s<=1;s+=2){var b=cyl(g,.12,.16,3,m.hull,x+1.8,1.9,s*.4);b.rotation.z=PI/2;var tip=cyl(g,.15,.15,.25,m.neon,x+3.3,1.9,s*.4);tip.rotation.z=PI/2}}
+  fin(g,[[-8,0],[-12.5,4],[-6,.4]],.16,m.hull,0,1.2,2.2);fin(g,[[-8,0],[-12.5,-4],[-6,-.4]],.16,m.hull,0,1.2,-2.2);
+  fin(g,[[-8,0],[-12.5,4],[-11,3.6],[-6,.4]],.17,m.neon,0,1.25,2.2).scale.set(1,.2,1);fin(g,[[-8,0],[-12.5,-4],[-11,-3.6],[-6,-.4]],.17,m.neon,0,1.25,-2.2).scale.set(1,.2,1);
+  thruster(g,-L/2-.2,.8,1,.7,acc,{dark:m.dark,neon:m.neon});thruster(g,-L/2-.2,.8,-1,.7,acc,{dark:m.dark,neon:m.neon});
+  return o}},
+{name:'Zip the Yacht',acc:0xffd23d,desc:'A tiny super-fast yacht. Perfect for a space picnic with friends!',
+ build:function(acc){var o=mk(acc),g=o.g,m=o.m,L=14;hull(g,L,3.4,1,m,acc,{tw:.6,bow:.7});
+  dome(g,1.6,2.2,1.1,1.2,m.glass,-1,1.05,0);box(g,4.5,.12,2.1,m.neon,-1,1.1,0);
+  dome(g,.8,1,.6,.9,m.trim,3.3,1.05,0);
+  cyl(g,.05,.05,1.8,m.trim,-3,2,0);ring(g,.4,.05,m.neon,-3,2.8,0);
+  fin(g,[[-L/2,0],[-L/2-1.8,2],[-L/2+2.4,.3]],.12,m.neon,0,.9,1.7);fin(g,[[-L/2,0],[-L/2-1.8,-2],[-L/2+2.4,-.3]],.12,m.neon,0,.9,-1.7);
+  thruster(g,-L/2-.2,.7,0,.75,acc,{dark:m.dark,neon:m.neon});
+  return o}}
+];
+
+/* ---------- ship handling ---------- */
+var cur=-1,ship=null,scaleT=0,spaceMode=false,spin=true,idle=0;
+var az=-.6,el=.28,dist=44,tAz=az,tEl=el;
+var dotsEl=document.getElementById('dots');SHIPS.forEach(function(){dotsEl.appendChild(document.createElement('i'))});
+function setAcc(hex){var c='#'+('000000'+hex.toString(16)).slice(-6);document.documentElement.style.setProperty('--acc',c);seaMat.uniforms.c.value.set(hex)}
+function show(i){i=(i+SHIPS.length)%SHIPS.length;if(ship){scene.remove(ship.g);ship.g.traverse(function(o){if(o.geometry)o.geometry.dispose()})}
+ cur=i;var s=SHIPS[i];ship=s.build(s.acc);var box3=new T.Box3().setFromObject(ship.g),sz=new T.Vector3();box3.getSize(sz);
+ ship.norm=27/Math.max(sz.x,sz.z);ship.g.scale.setScalar(.001);scene.add(ship.g);scaleT=0;
+ document.getElementById('nm').textContent=s.name;document.getElementById('ds').textContent=s.desc;setAcc(s.acc);
+ [].forEach.call(dotsEl.children,function(d,k){d.className=k===i?'on':''});
+ var h=document.getElementById('hint');h.style.opacity=0}
+document.getElementById('prev').onclick=function(){show(cur-1)};
+document.getElementById('next').onclick=function(){show(cur+1)};
+var modeB=document.getElementById('mode'),spinB=document.getElementById('spin');
+modeB.onclick=function(){spaceMode=!spaceMode;modeB.textContent=spaceMode?'Sea':'Space'};
+spinB.onclick=function(){spin=!spin;spinB.classList.toggle('on',spin)};
+addEventListener('keydown',function(e){if(e.key==='ArrowRight')show(cur+1);if(e.key==='ArrowLeft')show(cur-1)});
+/* drag to orbit */
+var drag=null;
+renderer.domElement.addEventListener('pointerdown',function(e){drag={x:e.clientX,y:e.clientY};try{renderer.domElement.setPointerCapture(e.pointerId)}catch(_){}});
+addEventListener('pointermove',function(e){if(!drag)return;tAz-= (e.clientX-drag.x)*.008;tEl=Math.max(.02,Math.min(1.2,tEl+(e.clientY-drag.y)*.005));drag.x=e.clientX;drag.y=e.clientY;idle=0});
+addEventListener('pointerup',function(){drag=null});
+addEventListener('resize',function(){renderer.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()});
+var clock=new T.Clock(),sB=new T.Color(0x050b16),spB=new T.Color(0x02030a);
+function frame(){requestAnimationFrame(frame);var dt=Math.min(clock.getDelta(),.05),t=clock.elapsedTime;
+ seaMat.uniforms.t.value=t;
+ if(ship){scaleT=Math.min(1,scaleT+dt*2.2);var k=1-Math.pow(1-scaleT,3);ship.g.scale.setScalar(Math.max(.001,ship.norm*k));
+  var bob=Math.sin(t*1.4)*.25;ship.g.position.y=(spaceMode?3.5+bob*2.4:bob*.6+.2);ship.g.rotation.z=Math.sin(t*1.1)*.025;ship.g.rotation.x=Math.sin(t*.9)*.02;
+  ship.g.userData.glows.forEach(function(gl){var f=1+Math.sin(t*18+gl.ph)*.12+Math.sin(t*31+gl.ph)*.06;gl.s.scale.set(gl.base*f,gl.base*f,1)})}
+ if(spin&&!drag){idle+=dt;tAz+=dt*.28}
+ az+=(tAz-az)*.12;el+=(tEl-el)*.12;
+ cam.position.set(Math.sin(az)*Math.cos(el)*dist,Math.sin(el)*dist+4,Math.cos(az)*Math.cos(el)*dist);cam.lookAt(0,3,0);
+ var sv=spaceMode;sea.visible=!sv;seaGlow.visible=!sv;planet.visible=pring.visible=true;
+ stars.rotation.y+=dt*.004;
+ scene.background.lerp(sv?spB:sB,.06);scene.fog.color.copy(scene.background);
+ renderer.render(scene,cam)}
+show(0);frame();
+setTimeout(function(){var h=document.getElementById('hint');h.style.opacity=.8;setTimeout(function(){h.style.opacity=0},2600)},900);
+})();
+</script>
+</body>
+</html>
