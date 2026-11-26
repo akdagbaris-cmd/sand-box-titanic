@@ -1,0 +1,12 @@
+{
+  "appId": "com.akdagbaris.sandboxtitanic",
+  "appName": "Sand Box Titanic",
+  "webDir": "www",
+  "backgroundColor": "#0c2238",
+  "ios": {
+    "contentInset": "never",
+    "backgroundColor": "#0c2238",
+    "scrollEnabled": false,
+    "allowsLinkPreview": false
+  }
+}

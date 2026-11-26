@@ -14,7 +14,7 @@ const HASH = 'df09c633be73aa5e8ce3bd432a75a7bba47b2fe109b0984577e5cba799ebeb32';
 const SETTLE = 2500; // ms to let each mode run after it opens
 
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json',
-  '.webmanifest': 'application/manifest+json', '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.glb': 'model/gltf-binary' };
+  '.webmanifest': 'application/manifest+json', '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.glb': 'model/gltf-binary', '.jpg': 'image/jpeg' };
 
 function serve() {
   const srv = http.createServer((req, res) => {
