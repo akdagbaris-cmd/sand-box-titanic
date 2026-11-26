@@ -87,6 +87,7 @@ svg{display:block}
 .yard header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .yard h2{font-family:var(--disp);font-weight:400;font-size:30px;margin:0}
 .yard header p{margin:2px 0 0;color:var(--brass);font-weight:800;font-size:14px}
+#yModeRow{display:flex;gap:8px;align-items:center;padding:8px 2px;flex-wrap:wrap}#yModeRow .btn{min-height:46px;padding:4px 14px;font-size:15px}#yHint{font-size:14px;opacity:.9;flex:1;min-width:170px}
 #yprev{width:100%;height:250px;touch-action:none;border-radius:14px;border:2px solid var(--brass2);display:block}
 .yctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px 22px}
 .row{display:flex;align-items:center;gap:12px;min-width:0}
@@ -354,14 +355,15 @@ input[type=range]{flex:1;min-width:0;accent-color:var(--brass);height:36px}
     <header><div><h2>Shipyard</h2><p>Belfast, where Titanic was built in 1911</p></div>
       <button class="x" id="yardX" aria-label="Close shipyard"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg></button></header>
     <canvas id="yprev"></canvas>
+    <div id="yModeRow"><button class="btn on" id="yStretch">🫧 Stretch</button><button class="btn" id="yTurn">↻ Turn</button><span id="yHint"></span></div>
     <div class="yctl">
       <div class="row"><span>Name</span><input id="yName" maxlength="18" autocomplete="off"></div>
       <div class="row"><span>Hull</span><div class="sw" data-k="hull"></div></div>
       <div class="row"><span>Deck</span><div class="sw" data-k="deck"></div></div>
       <div class="row"><span>Cabins</span><div class="sw" data-k="sup"></div></div>
       <div class="row"><span>Funnel color</span><div class="sw" data-k="funC"></div></div>
-      <div class="row"><span>Length</span><input type="range" id="yL" min="30" max="260"></div>
-      <div class="row"><span>Width</span><input type="range" id="yB" min="8" max="40"></div>
+      <div class="row"><span>Length</span><input type="range" id="yL" min="30" max="400"></div>
+      <div class="row"><span>Width</span><input type="range" id="yB" min="8" max="60"></div>
       <div class="row"><span>Top speed</span><input type="range" id="yS" min="20" max="100"></div>
       <div class="row"><span>Funnels</span><div class="step" data-k="fun" data-min="0" data-max="5" data-d="1"><button>−</button><b></b><button>+</button></div></div>
       <div class="row"><span>Masts</span><div class="step" data-k="masts" data-min="0" data-max="4" data-d="1"><button>−</button><b></b><button>+</button></div></div>
@@ -5010,8 +5012,10 @@ function thumbsYard(){if(HAS3D){if(Y3)Y3.sea.material.color.set(S.sea);return}if
 function yardUI(){$('#yName').value=YD.name;$('#yL').value=YD.L;$('#yB').value=YD.B;$('#yS').value=YD.speed;
   document.querySelectorAll('.sw').forEach(el=>{const k=el.dataset.k;el.innerHTML=SW[k].map(c=>'<button data-c="'+c+'" class="'+(c==='none'?'none ':'')+(YD[k]===c?'on':'')+'" style="'+(c==='none'?'':'background:'+c)+'" aria-label="'+(c==='none'?'No cabins':c)+'"></button>').join('')});
   document.querySelectorAll('.step').forEach(el=>el.querySelector('b').textContent=YD[el.dataset.k]);document.querySelectorAll('.tog').forEach(b=>b.classList.toggle('on',!!YD[b.dataset.k]));drawYard()}
-function openYard(){$('#yard').hidden=false;requestAnimationFrame(yardUI)}
+function openYard(){$('#yard').hidden=false;requestAnimationFrame(()=>{yardUI();yardHint()})}
 $('#yardX').onclick=()=>{$('#yard').hidden=true};
+function setYMode(m){yMode=m;$('#yStretch').classList.toggle('on',m==='stretch');$('#yTurn').classList.toggle('on',m==='turn');yardHint()}
+$('#yStretch').onclick=()=>setYMode('stretch');$('#yTurn').onclick=()=>setYMode('turn');
 $('#yard').addEventListener('click',e=>{if(e.target.id==='yard'){$('#yard').hidden=true;return}const s=e.target.closest('.sw [data-c]');if(s){YD[s.parentNode.dataset.k]=s.dataset.c;yardUI();return}
   const st=e.target.closest('.step button');if(st){const el=st.parentNode,k=el.dataset.k,d=+el.dataset.d*(st===el.firstElementChild?-1:1);YD[k]=clamp(YD[k]+d,+el.dataset.min,+el.dataset.max);yardUI();return}
   const tg=e.target.closest('.tog');if(tg){YD[tg.dataset.k]=!YD[tg.dataset.k];yardUI()}});
@@ -5173,13 +5177,32 @@ $('#b3d').onclick=()=>{if(view3d){close3d();return}open3d(driving||(sel&&sel.k==
 function yard3(){if(!Y3){g3init();const c=$('#yprev'),r=new THREE.WebGLRenderer({canvas:c,antialias:true});r.setPixelRatio(Math.min(2,devicePixelRatio||1));const sc=new THREE.Scene();sc.background=new THREE.Color('#9fd3ef');sc.fog=new THREE.Fog('#d6ecf7',600,2400);
     const sun=new THREE.DirectionalLight('#fff4dd',.8);sun.position.set(-.5,1,.4);sc.add(new THREE.HemisphereLight('#ffffff','#38607e',.85),sun);const sea=new THREE.Mesh(new THREE.CircleGeometry(3000,48).rotateX(-PI/2),new THREE.MeshLambertMaterial({color:S.sea}));sc.add(sea);
     Y3={r,sc,cam:new THREE.PerspectiveCamera(38,1,1,10000),sea,obj:null,yaw:.7,pitch:.38,drag:null,w:0,h:0,last:0};
-    c.addEventListener('pointerdown',e=>{c.setPointerCapture(e.pointerId);Y3.drag={x:e.clientX,y:e.clientY}});
-    c.addEventListener('pointermove',e=>{if(!Y3.drag)return;Y3.yaw-=(e.clientX-Y3.drag.x)*.01;Y3.pitch=clamp(Y3.pitch+(e.clientY-Y3.drag.y)*.006,.08,1.3);Y3.drag={x:e.clientX,y:e.clientY}});
-    ['pointerup','pointercancel'].forEach(ev=>c.addEventListener(ev,()=>Y3.drag=null));requestAnimationFrame(yloop)}
-  if(Y3.obj){Y3.sc.remove(Y3.obj.root);disposeObj(Y3.obj)}const T=yardType();Y3.obj=buildShip3D(T,null);Y3.obj.nav.forEach(m=>m.visible=false);Y3.sc.add(Y3.obj.root);Y3.T=T;Y3.sea.material.color.set(S.sea)}
-function yloop(t){requestAnimationFrame(yloop);if($('#yard').hidden||!Y3||!Y3.obj)return;const dt=Math.min(.05,(t-Y3.last)/1000);Y3.last=t;if(!Y3.drag)Y3.yaw+=dt*.25;
+    Y3.ptr=new Map();Y3.cs=new THREE.Vector3(1,1,1);Y3.cv=new THREE.Vector3();Y3.ts=new THREE.Vector3(1,1,1);Y3.d=200;Y3.sl=null;
+    c.addEventListener('pointerdown',e=>{try{c.setPointerCapture(e.pointerId)}catch(_){}Y3.ptr.set(e.pointerId,{x:e.clientX,y:e.clientY});if(yMode==='stretch')slimeStart(e);else Y3.drag={x:e.clientX,y:e.clientY}});
+    c.addEventListener('pointermove',e=>{const p=Y3.ptr.get(e.pointerId);if(!p)return;if(yMode==='stretch'){slimeMove(e,p)}else if(Y3.drag){Y3.yaw-=(e.clientX-Y3.drag.x)*.01;Y3.pitch=clamp(Y3.pitch+(e.clientY-Y3.drag.y)*.006,.08,1.3);Y3.drag={x:e.clientX,y:e.clientY}}p.x=e.clientX;p.y=e.clientY});
+    ['pointerup','pointercancel'].forEach(ev=>c.addEventListener(ev,e=>{Y3.ptr.delete(e.pointerId);Y3.drag=null;if(yMode==='stretch'&&Y3.sl&&Y3.ptr.size===0)slimeEnd();else if(yMode==='stretch'&&Y3.sl&&Y3.ptr.size===1){Y3.sl.pinch=null;const q=[...Y3.ptr.values()][0];slimeStart({clientX:q.x,clientY:q.y},true)}}));requestAnimationFrame(yloop)}
+  const pT=Y3.T,hadObj=!!Y3.obj;if(Y3.obj){Y3.sc.remove(Y3.obj.root);disposeObj(Y3.obj)}const T=yardType();Y3.obj=buildShip3D(T,null);Y3.obj.nav.forEach(m=>m.visible=false);Y3.sc.add(Y3.obj.root);Y3.T=T;Y3.sea.material.color.set(S.sea);
+  if(hadObj&&pT){Y3.cs.set(clamp(pT.L*Y3.cs.x/T.L,.2,5),Y3.cs.y,clamp(pT.B*Y3.cs.z/T.B,.2,5))}else{Y3.cs.set(1,1,1);Y3.d=Math.max(T.L,50)*1.05}Y3.ts.set(1,1,1);Y3.obj.root.scale.copy(Y3.cs)}
+/* slime stretch: drag the ship to stretch it, pinch to grow */
+let yMode='stretch';
+function yardHint(t){const h=$('#yHint');if(h)h.textContent=t||(yMode==='stretch'?'Drag the ship to stretch it like slime! Pinch to grow.':'Drag to turn the ship around.')}
+function slimeStart(e,keep){const c=Y3.r.domElement,rc=c.getBoundingClientRect(),ct=new THREE.Vector3(0,Y3.T.B*.5,0).project(Y3.cam),cx=rc.left+(ct.x*.5+.5)*rc.width,cy=rc.top+(-ct.y*.5+.5)*rc.height;
+  if(!Y3.sl||!keep&&Y3.ptr.size===1)Y3.sl={L0:YD.L,B0:YD.B,L:YD.L,B:YD.B,pinch:null};
+  const sl=Y3.sl;sl.sx=e.clientX>=cx?1:-1;sl.sy=e.clientY<cy?1:-1;sl.L0=sl.L;sl.B0=sl.B;
+  if(Y3.ptr.size>=2){const [a,b]=[...Y3.ptr.values()];sl.pinch=Math.hypot(a.x-b.x,a.y-b.y)||1}}
+function slimeMove(e,p){const sl=Y3.sl;if(!sl)return;const rc=Y3.r.domElement.getBoundingClientRect(),pxw=.688*Y3.d/Math.max(rc.height,1);
+  if(Y3.ptr.size>=2&&sl.pinch){p.x=e.clientX;p.y=e.clientY;const [a,b]=[...Y3.ptr.values()],ratio=(Math.hypot(a.x-b.x,a.y-b.y)||1)/sl.pinch;sl.L=sl.L0*ratio;sl.B=sl.B0*ratio}
+  else{sl.L+=(e.clientX-p.x)*pxw*sl.sx*1.6;sl.B+=-(e.clientY-p.y)*pxw*sl.sy*1.2}
+  sl.L=clamp(sl.L,30,400);sl.B=clamp(sl.B,8,60);sl.B=Math.min(sl.B,sl.L*.45);
+  const T=Y3.T,sx=sl.L/T.L,sz=Math.min(sl.B,sl.L*.45)/T.B;Y3.ts.set(sx,1+(Math.sqrt(sx*sz)-1)*.45,sz);
+  yardHint('Length '+Math.round(sl.L)+' m · Width '+Math.round(sl.B)+' m')}
+function slimeEnd(){const sl=Y3.sl;Y3.sl=null;if(!sl)return;YD.L=Math.round(sl.L);YD.B=Math.round(Math.min(sl.B,sl.L*.45));yardUI();yardHint()}
+
+function yloop(t){requestAnimationFrame(yloop);if($('#yard').hidden||!Y3||!Y3.obj)return;const dt=Math.min(.05,(t-Y3.last)/1000);Y3.last=t;
+  if(yMode==='stretch'){const dy=Math.atan2(Math.sin(PI/2-Y3.yaw),Math.cos(PI/2-Y3.yaw));Y3.yaw+=dy*.1;Y3.pitch+=(.42-Y3.pitch)*.1}else if(!Y3.drag)Y3.yaw+=dt*.25;
+  {const k=150,cc=8.5,cs=Y3.cs,v=Y3.cv,ts=Y3.ts;for(const a of['x','y','z']){v[a]+=(k*(ts[a]-cs[a])-cc*v[a])*dt;cs[a]+=v[a]*dt}Y3.obj.root.scale.copy(cs)}
   const c=Y3.r.domElement,w=c.clientWidth,h=c.clientHeight;if(!w||!h)return;if(w!==Y3.w||h!==Y3.h){Y3.w=w;Y3.h=h;Y3.r.setSize(w,h,false);Y3.cam.aspect=w/h;Y3.cam.updateProjectionMatrix()}
-  const T=Y3.T,d=Math.max(T.L,50)*1.05,ty=T.B*.5;Y3.cam.position.set(Math.cos(Y3.yaw)*Math.cos(Y3.pitch)*d,Math.sin(Y3.pitch)*d+ty,Math.sin(Y3.yaw)*Math.cos(Y3.pitch)*d);Y3.cam.lookAt(0,ty,0);
+  const T=Y3.T,dT=Math.max(T.L,50)*1.05,ty=T.B*.5;Y3.d+=(dT-Y3.d)*.12;const d=Y3.d;Y3.cam.position.set(Math.cos(Y3.yaw)*Math.cos(Y3.pitch)*d,Math.sin(Y3.pitch)*d+ty,Math.sin(Y3.yaw)*Math.cos(Y3.pitch)*d);Y3.cam.lookAt(0,ty,0);
   Y3.obj.root.position.y=Math.sin(t*.0015)*.4;Y3.obj.root.rotation.x=Math.sin(t*.001)*.02;Y3.r.render(Y3.sc,Y3.cam)}
 
 
