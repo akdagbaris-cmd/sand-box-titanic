@@ -1,7 +1,7 @@
 /* Sand Box Titanic - offline cache.
    Serves the game from the cache so it opens with no internet, and quietly
    refreshes itself in the background. A new version shows up next launch. */
-const CACHE = 'sbt-1';
+const CACHE = 'sbt-2';
 const CORE = [
   './',
   './index.html',
@@ -19,7 +19,38 @@ const CORE = [
   './assets/fonts/nunito-latin-ext-900-normal.woff2',
   './icons/icon-192.png',
   './icons/icon-512.png',
-  './icons/apple-touch-icon.png'
+  './icons/apple-touch-icon.png',
+  './assets/models/anims.glb',
+  './assets/models/c/cap.glb',
+  './assets/models/c/chef.glb',
+  './assets/models/c/eng.glb',
+  './assets/models/c/fa1.glb',
+  './assets/models/c/fa14.glb',
+  './assets/models/c/fa2.glb',
+  './assets/models/c/fa5.glb',
+  './assets/models/c/fb3.glb',
+  './assets/models/c/fish.glb',
+  './assets/models/c/kb1.glb',
+  './assets/models/c/kb2.glb',
+  './assets/models/c/kg1.glb',
+  './assets/models/c/kg2.glb',
+  './assets/models/c/ma1.glb',
+  './assets/models/c/ma14.glb',
+  './assets/models/c/ma6.glb',
+  './assets/models/c/mb1.glb',
+  './assets/models/c/mb6.glb',
+  './assets/models/c/off.glb',
+  './assets/models/c/offf.glb',
+  './assets/models/c/sol.glb',
+  './assets/models/c/solf.glb',
+  './assets/models/f/ChairDamaskPurplegold.glb',
+  './assets/models/f/DiffuseTransmissionPlant.glb',
+  './assets/models/f/GlamVelvetSofa.glb',
+  './assets/models/f/SheenWoodLeatherSofa.glb',
+  './assets/models/t/FloorsCheckerboard_S_Diffuse.jpg',
+  './assets/models/t/hardwood2_bump.jpg',
+  './assets/models/t/hardwood2_diffuse.jpg',
+  './assets/models/t/hardwood2_roughness.jpg'
 ];
 
 self.addEventListener('install', e => {
