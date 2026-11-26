@@ -1,7 +1,12 @@
 /* Sand Box Titanic - offline cache.
    Serves the game from the cache so it opens with no internet, and quietly
-   refreshes itself in the background. A new version shows up next launch. */
-const CACHE = 'sbt-1';
+   refreshes itself in the background. A new version shows up next launch.
+
+   VERSION changes on every release: run tools/bump-sw-version.sh before
+   merging (a GitHub check fails if you forget). A new VERSION makes browsers install a fresh worker,
+   download every file again and delete the old cache. */
+const VERSION = 'd422f2392b';
+const CACHE = 'sbt-' + VERSION;
 const CORE = [
   './',
   './index.html',
@@ -34,7 +39,7 @@ self.addEventListener('install', e => {
 self.addEventListener('activate', e => {
   e.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)));
+    await Promise.all(keys.filter(k => k.startsWith('sbt-') && k !== CACHE).map(k => caches.delete(k)));
     await self.clients.claim();
   })());
 });
