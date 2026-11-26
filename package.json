@@ -7,10 +7,12 @@
     "build:www": "node scripts/build-www.mjs",
     "ios:sync": "npm run build:www && npx cap sync ios",
     "ios:open": "npx cap open ios",
-    "ios": "npm run ios:sync && npx cap open ios"
+    "ios": "npm run ios:sync && npx cap open ios",
+    "test:smoke": "node tests/smoke.mjs"
   },
   "devDependencies": {
-    "@capacitor/cli": "^8.6.3"
+    "@capacitor/cli": "^8.6.3",
+    "playwright": "^1.48.0"
   },
   "dependencies": {
     "@capacitor/core": "^8.6.3",
