@@ -1,0 +1,18 @@
+# Checks that VERSION in sw.js matches the game files, so a release never
+# ships with a stale offline cache. Fix a failure with tools/bump-sw-version.sh
+name: Offline cache version
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./tools/bump-sw-version.sh --check
